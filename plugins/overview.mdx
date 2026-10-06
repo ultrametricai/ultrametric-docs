@@ -1,0 +1,30 @@
+---
+title: "Project skills"
+description: "Give your agent Ultrametric instructions in a project."
+---
+
+The CLI includes a skill that explains how to find processes, reuse company context, and save progress. Install it in a project used by Codex or Claude Code.
+
+First [install the CLI](/cli/install). From the project directory:
+
+```sh
+ultrametric init --dry-run --json
+ultrametric init --json
+```
+
+The first command previews changes. The second writes the selected skill files.
+
+| Agent | File | Setup |
+| --- | --- | --- |
+| Codex | `.agents/skills/ultrametric/SKILL.md` | [Codex project setup](/plugins/codex) |
+| Claude Code | `.claude/skills/ultrametric/SKILL.md` | [Claude Code project setup](/plugins/claude-code) |
+
+Use `--agent codex` or `--agent claude` to install one target. Use `--path` to select an existing project directory explicitly.
+
+The files contain agent instructions. Your agent also needs the CLI on its executable path and a login for hosted operations. Set up an [MCP connection](/mcp/connect) separately if that is the interface you want to use.
+
+## Refresh or customize guidance
+
+Run `init --dry-run` after a CLI upgrade to inspect changes. Identical files remain unchanged. If a file differs, review it before using `--force` to replace the selected Ultrametric skill.
+
+Keep project-specific additions in your project's own instructions so they survive a skill update. You can commit the skill files to share the setup with your team.

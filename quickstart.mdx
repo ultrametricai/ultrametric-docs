@@ -1,0 +1,58 @@
+---
+title: "Get started with your agent"
+description: "Find a process, read its instructions, and decide what to do next."
+---
+
+First [install the CLI and sign in](/cli/install), or [connect MCP](/mcp/connect). Your agent can run the commands or call the tools below. You complete any browser sign-in step.
+
+## 1. Give your agent a goal
+
+Be specific about the outcome and any constraints you already know:
+
+```text
+Use Ultrametric to find the next company-setup process for this project.
+Use the project information we already have and show me the proposed next step.
+```
+
+The agent should reuse known facts and leave missing information marked as unknown.
+
+## 2. Check the account
+
+With the CLI:
+
+```sh
+ultrametric --version
+ultrametric auth status --json
+```
+
+Check the account, selected organization, and environment in the result. CLI login status describes the saved session; the next API request checks whether the service accepts it.
+
+With MCP, ask the agent to call `status` with `{}` and check the returned account, environment, and `selectedOrganizationId`.
+
+## 3. Find and read a process
+
+With the CLI:
+
+```sh
+ultrametric process list --limit 5 --json
+```
+
+With MCP, call `list_processes` with `{"limit": 5}`.
+
+Each returned item has an `id`, `version`, `name`, and `description`. Choose an item relevant to your goal. Replace `PROCESS_ID` below with its exact ID:
+
+```sh
+ultrametric process get PROCESS_ID --json
+```
+
+The MCP equivalent is `get_process`, with that ID in the `id` field.
+
+Both interfaces return `process.id`, `process.version`, `guide.instructions`, and `guide.resultSchema`. The CLI wraps them in `data`. The agent reads the instructions and uses the result schema when preparing structured output.
+
+If the catalog is empty or the request fails, use [troubleshooting](/troubleshooting).
+
+## 4. Continue the work
+
+Ask the agent to explain the next useful action and collect any information it needs from you. To keep progress for later sessions, [open a run and save updates](/guides/save-progress).
+
+Reading a guide leaves hosted records unchanged. Opening a run creates or resumes saved work. Your agent uses its available tools for external actions and follows your authorization for those actions.

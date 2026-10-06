@@ -1,0 +1,72 @@
+---
+title: "Start a run and save progress"
+description: "Keep decisions, documents, and process progress for the next session."
+---
+
+Once you have [selected a process](/guides/retrieve-a-process), ask your agent to start the work and keep its progress in Ultrametric:
+
+```text
+Start this process for our company. Save the decisions and useful results
+as we go, and tell me if anything cannot be saved.
+```
+
+Opening and saving require company-context read and write permissions. Check the [selected organization](/mcp/authentication) before continuing.
+
+## 1. Open or resume the run
+
+Replace `PROCESS_ID` with the ID selected from the catalog:
+
+```sh
+ultrametric process open PROCESS_ID --json
+```
+
+If there are several companies, use `--company` with a hosted company ID from `context get`. Use `--period` when a recurring process needs a separate run for a particular period.
+
+The MCP equivalent is `open_process` with `processId` and optional `companyId` and `period`.
+
+The result includes the guide and existing context, plus the identifiers needed for saving:
+
+| Returned field | Save-input field |
+| --- | --- |
+| `organizationId` | `organizationId` |
+| `run.id` | `runId` |
+| `run.nextUpdateKey` | `updateKey` |
+
+CLI results place these fields inside `data`. Opening a run records or resumes work; your agent follows the guide using its context and tools.
+
+## 2. Prepare an update
+
+Your agent can retrieve the full input format:
+
+```sh
+ultrametric context schema save --json
+```
+
+Have the agent prepare `update.json` using the returned `inputSchema` and the exact identifiers from the open result.
+
+| Field | What to include |
+| --- | --- |
+| `text` | A concise progress update |
+| `source` | Where the information came from, when useful |
+| `progress` | An optional status and detail |
+| `records` | Optional profiles, documents, vault references, or deletions |
+
+Progress statuses are `in_progress`, `waiting`, `completed`, and `deleted`. New records can omit an ID. Updating or deleting an existing record requires its ID and current revision. Save a company profile through a `company-profile` run using that guide's result schema.
+
+Keep secret values out of updates and documents. A vault reference is protected; other sensitive content should use protected visibility and the corresponding permissions.
+
+## 3. Save and check the receipt
+
+```sh
+ultrametric context save --file update.json --json
+```
+
+MCP uses `save_update` with the same input fields. A successful result contains `saved: true`, the run revision, record revisions, and `nextUpdateKey`. Keep that next key for the next change.
+
+If a response is lost or times out, retry the same input with the same update key. If the service reports a conflict, read current context before preparing a new change.
+
+## 4. Return to the saved result
+
+Use `context get --run` or MCP `get_context` with `runId` to read progress and the next update key. See [resume earlier work](/guides/resume-work).
+
+A save confirms that the update was stored. Keep external confirmations, such as a submitted filing's receipt, with the relevant record when your agent performs that work.

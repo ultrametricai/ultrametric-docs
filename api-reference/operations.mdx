@@ -1,0 +1,171 @@
+---
+title: "HTTP operations"
+description: "Request fields for process discovery, runs, and saved context."
+---
+
+Send requests to `https://api.ultrametric.ai` with an OAuth bearer token. See [authentication and responses](/api-reference/overview) before calling an operation. The [OpenAPI contract](/contracts/openapi.json) includes exact input constraints and success and error response schemas.
+
+## getStatus
+
+```http
+GET /status
+```
+
+Read the signed-in identity and optional process access.
+
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `processId` | query | string | No | Maximum characters: 100 |
+
+## resolveWorkspace
+
+```http
+GET /auth/workspace
+```
+
+Resolve the selected or sole active workspace for login token binding.
+
+## listProcesses
+
+```http
+GET /processes
+```
+
+List the latest published process versions available to you.
+
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `X-Ultrametric-Interaction-Medium` | header | string | No | Client-reported interaction medium. Missing or unsupported values use unknown. `terminal`, `terminal_agent`, `desktop_agent`, `mobile_agent`, `web`, `unknown` |
+| `limit` | query | integer | No | Minimum: 1; Maximum: 100; Default: `25` |
+| `after` | query | string | No | Maximum characters: 100 |
+
+## getProcess
+
+```http
+GET /processes/{id}
+```
+
+Read a process guide and result schema.
+
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `X-Ultrametric-Interaction-Medium` | header | string | No | Client-reported interaction medium. Missing or unsupported values use unknown. `terminal`, `terminal_agent`, `desktop_agent`, `mobile_agent`, `web`, `unknown` |
+| `id` | path | string | Yes | Maximum characters: 100 |
+| `version` | query | integer | No | Omit for the latest published version. Minimum: 1; Maximum: 2147483647 |
+
+## openProcess
+
+```http
+POST /context/open
+```
+
+Open or resume a process run.
+
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `processId` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `organizationId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `companyId` | string | No | Format: `uuid` |
+| `period` | string | No | Maximum characters: 100; Default: `""` |
+
+## saveUpdate
+
+```http
+POST /context/save
+```
+
+Append progress and record revisions.
+
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `organizationId` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `runId` | string | Yes | Format: `uuid` |
+| `updateKey` | string | Yes | Format: `uuid` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `text` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+| `source` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+| `observedAt` | string | No | Format: `date-time` |
+| `progress` | object | No |  |
+| `records` | array | No | Maximum items: 10; Default: `[]` |
+
+### progress
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `status` | string | Yes | `in_progress`, `waiting`, `completed`, `deleted` |
+| `detail` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+
+### records: profile
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `profile` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `profile` | object | Yes |  |
+
+### records: document
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `document` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `title` | string | Yes | Minimum characters: 1; Maximum characters: 200 |
+| `purpose` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `state` | string | No | `draft`, `current`; Default: `draft` |
+| `body` | string | Yes | Minimum characters: 1; Maximum characters: 32000 |
+| `source` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+
+### records: reference
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `reference` |
+| `visibility` | string | No | Value: `protected`; Default: `protected` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `subject` | string | Yes | Minimum characters: 1; Maximum characters: 200 |
+| `property` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `provider` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `location` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+| `locationType` | string | Yes | `reference`, `hint` |
+| `source` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+
+### records: delete
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `delete` |
+| `id` | string | Yes | Format: `uuid` |
+| `expectedRevision` | integer | Yes | Minimum: 1; Maximum: 2147483647 |
+
+## getContext
+
+```http
+POST /context/get
+```
+
+Find or read authorized context.
+
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `collection` | string | No | `companies`, `runs`, `records` |
+| `organizationId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `companyId` | string | No | Format: `uuid` |
+| `runId` | string | No | Format: `uuid` |
+| `recordId` | string | No | Format: `uuid` |
+| `processId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `query` | string | No | Minimum characters: 1; Maximum characters: 200 |
+| `history` | boolean | No | Default: `false` |
+| `beforeRevision` | integer | No | Minimum: 1; Maximum: 2147483647 |
+| `after` | string | No | Format: `uuid` |
+| `limit` | integer | No | Minimum: 1; Maximum: 25; Default: `10` |

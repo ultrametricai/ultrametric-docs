@@ -1,0 +1,35 @@
+---
+title: "Connect MCP"
+description: "Add Ultrametric tools to an agent that supports remote MCP and OAuth."
+---
+
+In your agent host's remote MCP settings, add a connection with this server URL:
+
+```text
+https://api.ultrametric.ai/mcp
+```
+
+Complete the OAuth sign-in offered by the host. Choose the Ultrametric account and organization you want to use. Keep tokens and sign-in codes out of shared messages and repository files.
+
+The host must support remote MCP and OAuth. Use its setup instructions to find the connection settings; the names and locations differ between applications.
+
+## Check the connection
+
+Ask your agent:
+
+```text
+Use Ultrametric to check my connection and selected organization.
+Then list the available processes and read one relevant to this project.
+```
+
+The agent should call `status`, then `list_processes`, then `get_process` with a returned ID. Check the account and environment in the status result. A successful guide response includes its instructions and result schema.
+
+If sign-in fails or the catalog is empty, see [troubleshooting](/troubleshooting). For the exact tool inputs, see [MCP tools](/mcp/tools).
+
+## Continue across sessions
+
+Use [saved context](/guides/resume-work) to find earlier company records and runs. CLI and MCP can access the same hosted records when signed in to the same organization. Their login sessions are separate.
+
+Tools return text and structured data that your agent can use. Some hosts can also show a process view. If a view is unavailable, ask the agent to summarize the returned data.
+
+For staging work, use a separately named connection to `https://api.ultrametric.dev/mcp` and sign in for that environment. Keep production and staging connections distinct.

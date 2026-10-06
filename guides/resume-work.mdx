@@ -1,0 +1,54 @@
+---
+title: "Resume earlier work"
+description: "Find a saved company, run, or record in a new agent session."
+---
+
+Ask your agent:
+
+```text
+Use Ultrametric to find our saved company context and ongoing runs.
+Summarize where we left off before continuing.
+```
+
+Use the same account, organization, and environment as the earlier work. CLI and MCP can read the same hosted records, but have separate login sessions.
+
+## Find a company
+
+```sh
+ultrametric context get --json
+```
+
+With no selectors, this lists hosted companies you can access. If there is more than one, choose a returned company ID. Replace `COMPANY_ID` below with that ID:
+
+```sh
+ultrametric context get --collection runs --company COMPANY_ID --json
+```
+
+The result includes runs and their IDs. Browse records with `--collection records` instead.
+
+## Read the selected work
+
+Replace `RUN_ID` or `RECORD_ID` with a returned value:
+
+```sh
+ultrametric context get --run RUN_ID --json
+ultrametric context get --record RECORD_ID --json
+```
+
+MCP `get_context` accepts the corresponding `collection`, `companyId`, `runId`, and `recordId` fields.
+
+Browse results can contain previews. Retrieve the selected record to read its full content, sources, and revision. Check whether the information is current or still a draft before relying on it.
+
+## Page through results or history
+
+For collection results, use `nextCursor` as `--after` on the next request. The maximum `--limit` is 25. Keep the same selectors and environment.
+
+For history, select one record or run:
+
+```sh
+ultrametric context get --record RECORD_ID --history --json
+```
+
+History pages use `nextCursor` as `--before-revision`. In MCP, use `history: true` and `beforeRevision`.
+
+To continue the work, [open the process and save a new update](/guides/save-progress). If a record exists only in local CLI storage, use `companies list` or `assessments list`; hosted context does not search those local files.

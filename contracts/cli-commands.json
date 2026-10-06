@@ -1,0 +1,634 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "name": "ultrametric",
+    "description": "Company setup guidance and records for your project.",
+    "usage": "[options] [command]",
+    "options": [
+      {
+        "flags": "-v, --version",
+        "description": "output the version number",
+        "required": false,
+        "choices": null
+      },
+      {
+        "flags": "--json",
+        "description": "Print a versioned JSON result; errors are JSON on stderr.",
+        "required": false,
+        "choices": null
+      },
+      {
+        "flags": "--no-json",
+        "description": "Use text output even when settings default to JSON.",
+        "required": false,
+        "choices": null
+      },
+      {
+        "flags": "--data-dir <directory>",
+        "description": "User home for settings, logs, and data (or ULTRAMETRIC_DATA_DIR).",
+        "required": false,
+        "choices": null
+      },
+      {
+        "flags": "--environment <environment>",
+        "description": "API and login environment; local records stay in the selected data directory.",
+        "required": false,
+        "choices": [
+          "production",
+          "staging"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "name": "auth",
+        "description": "Log in, check status, or log out.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "login",
+            "description": "Open a browser and wait for login; --json returns a link for agent completion.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "complete",
+            "description": "Check a pending login once and save the session after browser approval.",
+            "usage": "[options] <login-id>",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "status",
+            "description": "Show login status.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "logout",
+            "description": "Log out.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "init",
+        "description": "Install the Ultrametric documentation skill in a project for Codex and Claude Code.",
+        "usage": "[options]",
+        "options": [
+          {
+            "flags": "--path <directory>",
+            "description": "Existing project directory (defaults to the current directory).",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--agent <agent>",
+            "description": "Agent skill location to install.",
+            "required": false,
+            "choices": [
+              "all",
+              "codex",
+              "claude"
+            ]
+          },
+          {
+            "flags": "--dry-run",
+            "description": "Preview changes without writing project files, settings, or logs.",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--force",
+            "description": "Replace an existing Ultrametric SKILL.md that differs from the bundled version.",
+            "required": false,
+            "choices": null
+          }
+        ],
+        "commands": []
+      },
+      {
+        "name": "process",
+        "description": "Find guides and open hosted process runs.",
+        "usage": "[options] [command] [id]",
+        "options": [
+          {
+            "flags": "--process-version <number>",
+            "description": "Published process version (defaults to latest).",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--path <directory>",
+            "description": "Local project context for company-profile or ai-native-assessment.",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--company <uuid>",
+            "description": "Resume a local company-profile record.",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--project <name>",
+            "description": "Project display name for ai-native-assessment.",
+            "required": false,
+            "choices": null
+          }
+        ],
+        "commands": [
+          {
+            "name": "list",
+            "description": "List process IDs and purposes available to your account.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--limit <number>",
+                "description": "Processes per page, from 1 to 100.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--after <id>",
+                "description": "Cursor returned by the previous page.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "get",
+            "description": "Read a published guide by its exact ID.",
+            "usage": "[options] <id>",
+            "options": [
+              {
+                "flags": "--process-version <number>",
+                "description": "Published process version (defaults to latest).",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--path <directory>",
+                "description": "Local project context for company-profile or ai-native-assessment.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--company <uuid>",
+                "description": "Resume a local company-profile record.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--project <name>",
+                "description": "Project display name for ai-native-assessment.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "open",
+            "description": "Start or resume a hosted run with its guide and saved context.",
+            "usage": "[options] <id>",
+            "options": [
+              {
+                "flags": "--company <uuid>",
+                "description": "Hosted company ID returned by context get.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--organization <id>",
+                "description": "Require the organization selected for this login.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--period <period>",
+                "description": "Recurring run period; omit for the default run.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "context",
+        "description": "Read and save hosted company context through the API.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "schema",
+            "description": "Read the API input schema for open, save, or get.",
+            "usage": "[options] <operation>",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "save",
+            "description": "Save hosted progress, profiles, documents, or vault references.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--file <path>",
+                "description": "API save input as JSON; use - for stdin.",
+                "required": true,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "get",
+            "description": "Read hosted companies, runs, records, or explicit history.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--file <path>",
+                "description": "API get input as JSON; use - for stdin. Cannot be combined with selectors.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--collection <collection>",
+                "description": "Collection to browse.",
+                "required": false,
+                "choices": [
+                  "companies",
+                  "runs",
+                  "records"
+                ]
+              },
+              {
+                "flags": "--organization <id>",
+                "description": "Require the organization selected for this login.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--company <uuid>",
+                "description": "Hosted company ID.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--run <uuid>",
+                "description": "Read one run and its next update key.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--record <uuid>",
+                "description": "Read one complete record.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--process <id>",
+                "description": "Filter runs by process.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--query <text>",
+                "description": "Search current records.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--history",
+                "description": "Read history for a selected run or record.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--before-revision <number>",
+                "description": "History cursor from the previous page.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--after <uuid>",
+                "description": "Collection cursor from the previous page.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--limit <number>",
+                "description": "Page size; the API permits 1 to 25.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "understand",
+        "description": "Prepare a local profile with the legacy offline guide.",
+        "usage": "[options]",
+        "options": [
+          {
+            "flags": "--path <directory>",
+            "description": "Project directory; the agent supplies its context.",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--company <uuid>",
+            "description": "Resume this saved company profile and revision.",
+            "required": false,
+            "choices": null
+          }
+        ],
+        "commands": []
+      },
+      {
+        "name": "companies",
+        "description": "Validate, save, and retrieve local company profiles.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "schema",
+            "description": "Print the accepted company-profile JSON Schema.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "validate",
+            "description": "Check profile structure without saving or approving it.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--file <path>",
+                "description": "Profile JSON file; use - for stdin.",
+                "required": true,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "save",
+            "description": "Save a reviewed local profile; updates require the current revision.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--file <path>",
+                "description": "Raw profile JSON file; use - for stdin.",
+                "required": true,
+                "choices": null
+              },
+              {
+                "flags": "--id <uuid>",
+                "description": "New company ID for repeatable creation; the profile companyId must be null.",
+                "required": false,
+                "choices": null
+              },
+              {
+                "flags": "--revision <number>",
+                "description": "Expected revision for an existing company profile.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "list",
+            "description": "List reviewed company profiles, most recently updated first.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "show",
+            "description": "Read a reviewed profile, sources, and current revision.",
+            "usage": "[options] <id>",
+            "options": [],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "assess",
+        "description": "Give the active agent a project assessment guide, rubric, and JSON template.",
+        "usage": "[options]",
+        "options": [
+          {
+            "flags": "--path <directory>",
+            "description": "Project directory; the agent performs the inspection.",
+            "required": false,
+            "choices": null
+          },
+          {
+            "flags": "--project <name>",
+            "description": "Display name (defaults to the directory name).",
+            "required": false,
+            "choices": null
+          }
+        ],
+        "commands": []
+      },
+      {
+        "name": "assessments",
+        "description": "Save and retrieve local project assessments.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "schema",
+            "description": "Print the accepted assessment JSON Schema.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "save",
+            "description": "Validate and save findings from a JSON file or stdin.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--file <path>",
+                "description": "Assessment JSON file; use - for stdin.",
+                "required": true,
+                "choices": null
+              },
+              {
+                "flags": "--id <uuid>",
+                "description": "Reuse this UUID on retries; a different payload causes a conflict.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "list",
+            "description": "List saved assessments, newest first.",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--project <name>",
+                "description": "Match the exact project display name.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "show",
+            "description": "Read an assessment, evidence, and action states.",
+            "usage": "[options] <id>",
+            "options": [],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "actions",
+        "description": "Record the actions the user has chosen.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "set",
+            "description": "Set an action status using the latest assessment revision.",
+            "usage": "[options] <assessment-id> <action-id>",
+            "options": [
+              {
+                "flags": "--status <status>",
+                "description": "New action state.",
+                "required": true,
+                "choices": [
+                  "proposed",
+                  "planned",
+                  "in_progress",
+                  "done",
+                  "dismissed"
+                ]
+              },
+              {
+                "flags": "--revision <number>",
+                "description": "Expected current revision, from assessments show.",
+                "required": true,
+                "choices": null
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "arena",
+        "description": "Read vendor ratings and cited evidence directly from ProductArena.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "categories",
+            "description": "List arena IDs for vendor research.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "rankings",
+            "description": "Read the published vendor leaderboard for one arena.",
+            "usage": "[options] <arena>",
+            "options": [
+              {
+                "flags": "--limit <number>",
+                "description": "Maximum products, from 1 to 100.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          },
+          {
+            "name": "stories",
+            "description": "List evaluated capabilities and their story IDs.",
+            "usage": "[options] <arena>",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "verdict",
+            "description": "Read a capability verdict and its cited evidence.",
+            "usage": "[options] <arena> <product> <story>",
+            "options": [],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "config",
+        "description": "Manage settings shared across all project directories.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "show",
+            "description": "Show your user settings and their location.",
+            "usage": "[options]",
+            "options": [],
+            "commands": []
+          },
+          {
+            "name": "set",
+            "description": "Set output text|json or logging true|false for all projects.",
+            "usage": "[options] <key> <value>",
+            "options": [],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "logs",
+        "description": "Inspect local command diagnostics.",
+        "usage": "[options] [command]",
+        "options": [],
+        "commands": [
+          {
+            "name": "show",
+            "description": "Read recent command names, durations, and exit codes (newest first).",
+            "usage": "[options]",
+            "options": [
+              {
+                "flags": "--limit <number>",
+                "description": "Maximum entries, from 1 to 1000.",
+                "required": false,
+                "choices": null
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "name": "doctor",
+        "description": "Show diagnostic information.",
+        "usage": "[options]",
+        "options": [],
+        "commands": []
+      }
+    ]
+  }
+}

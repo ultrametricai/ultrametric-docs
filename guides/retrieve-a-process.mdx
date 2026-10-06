@@ -1,0 +1,46 @@
+---
+title: "Find a process and choose its version"
+description: "Page through the catalog and retrieve the instructions your agent needs."
+---
+
+List processes available to your account:
+
+```sh
+ultrametric process list --limit 25 --json
+```
+
+The MCP equivalent is `list_processes`. It accepts `limit` from 1 to 100, with a default of 25.
+
+## Read the next page
+
+If `nextCursor` is not null, use that value for the next request. Replace `CURSOR` below with the returned cursor:
+
+```sh
+ultrametric process list --limit 25 --after CURSOR --json
+```
+
+For MCP, pass it as `after`. Keep the same account and environment while paging.
+
+## Retrieve a guide
+
+Use an ID from the catalog. Replace `PROCESS_ID` with the returned ID:
+
+```sh
+ultrametric process get PROCESS_ID --json
+```
+
+This returns the latest published version available to you. To select a specific version, replace `VERSION` with its positive integer version number:
+
+```sh
+ultrametric process get PROCESS_ID --process-version VERSION --json
+```
+
+For MCP, call `get_process` with `id` and an optional `version`. Save the returned process ID and version with any result that relies on the guide.
+
+CLI `--version` prints the CLI version. Use `--process-version` to choose a guide version. `process get` accepts exact IDs even when they resemble command names.
+
+## Include local project context
+
+The `company-profile` and `ai-native-assessment` adapters accept `--path` to add local project context and a template to the guide response. That context stays local during retrieval. Check [command options](/cli/commands) before using an adapter-specific flag.
+
+If the returned guide schema rejects the local template, update the CLI or select a compatible process version. If a process is unavailable, return to the catalog or check [account access](/mcp/authentication).

@@ -1,0 +1,30 @@
+---
+title: "Use with Codex"
+description: "Install Ultrametric project instructions for Codex."
+---
+
+Make the [CLI](/cli/install) available in the terminal environment used by Codex. From your project directory, preview and install the skill:
+
+```sh
+ultrametric init --agent codex --dry-run --json
+ultrametric init --agent codex --json
+```
+
+The installer writes:
+
+```text
+.agents/skills/ultrametric/SKILL.md
+```
+
+Use `--path` if you want to select a different existing project directory. If the preview reports a conflict, inspect the existing skill before using `--force` to replace it.
+
+Start or refresh a Codex session in the project, then ask:
+
+```text
+Use Ultrametric to find a process for the company work this project needs.
+Reuse any saved context and show me the next step.
+```
+
+If the skill is not available in the session, check the generated file and start a fresh session in that project. The agent can also use `ultrametric --help` directly.
+
+Project skill installation does not sign you in. Follow [CLI sign-in](/cli/install) before requesting hosted processes or company context. For remote tools instead of terminal commands, use [MCP setup](/mcp/connect).

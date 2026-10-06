@@ -1,0 +1,44 @@
+---
+title: "Processes, runs, and saved context"
+description: "Understand what your agent retrieves and what it saves."
+---
+
+A **process** is a guide for achieving an outcome. It contains instructions and a result schema that tells your agent how to structure the result.
+
+A **run** is saved work on a process for an organization and company. It records the process version and progress. A recurring task can have a separate run for each period.
+
+**Context** is information your agent can reuse: company profiles, documents, references, decisions, and progress updates.
+
+## How the operations fit together
+
+| Action | CLI | MCP |
+| --- | --- | --- |
+| Find processes | `process list` | `list_processes` |
+| Read a guide | `process get` | `get_process` |
+| Start or resume saved work | `process open` | `open_process` |
+| Save progress and records | `context save` | `save_update` |
+| Read saved work | `context get` | `get_context` |
+
+Opening a run returns its guide, current context, organization ID, run ID, and next update key. When an organization has no company yet, opening a process can create the initial company. When there are several companies, select one first.
+
+## Revisions and receipts
+
+Saved records have revisions. An update to an existing record must include its current revision so one session does not overwrite another session's changes.
+
+A successful save returns a receipt with `saved`, `revision`, `savedAt`, `nextUpdateKey`, and the affected record revisions. Your agent should retain that receipt before reporting that information was saved.
+
+If a save times out, retry the exact input with the same update key. Use the returned next key for a new change. Read current state before resolving a conflict. See [save progress](/guides/save-progress).
+
+Normal reads return current records. Deleted and superseded revisions are available only through an explicit history request. Deleting a record adds a tombstone while retaining its history.
+
+## Review and external actions
+
+Your agent may ask you to confirm facts, choose between options, or authorize an action. Saved review fields record what the caller reports. Keep the original approval or correction with the result when it matters.
+
+A saved update or a run marked `completed` records progress reported by your agent. For a filing, payment, or account change, ask the agent for the confirmation from the service that performed the action. Ultrametric's process and context operations retrieve guidance and store information; the agent's other tools carry out external work.
+
+## Hosted and local records
+
+CLI `process open` and `context` commands use hosted records shared with MCP. CLI `companies` and `assessments` commands use local files. Local records are not uploaded automatically.
+
+Hosted records belong to the selected organization. Protected records require additional permissions. Keep secret values in an appropriate vault and store only a protected reference when needed. See [account and organization access](/mcp/authentication).

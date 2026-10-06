@@ -1,0 +1,435 @@
+---
+title: "CLI commands"
+description: "Commands, arguments, and options for Ultrametric 0.4.1."
+---
+
+Use `--json` for structured output and `--help` on any command for its usage. Start with [installation and sign-in](/cli/install), or follow the guide to [start a run and save progress](/guides/save-progress).
+
+## ultrametric
+
+Company setup guidance and records for your project.
+
+```text
+ultrametric [options] [command]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `-v, --version` | output the version number |  | No |
+| `--json` | Print a versioned JSON result; errors are JSON on stderr. |  | No |
+| `--no-json` | Use text output even when settings default to JSON. |  | No |
+| `--data-dir <directory>` | User home for settings, logs, and data (or ULTRAMETRIC_DATA_DIR). |  | No |
+| `--environment <environment>` | API and login environment; local records stay in the selected data directory. | production, staging | No |
+
+## ultrametric auth
+
+Log in, check status, or log out.
+
+```text
+ultrametric auth [options] [command]
+```
+
+## ultrametric auth login
+
+Open a browser and wait for login; --json returns a link for agent completion.
+
+```text
+ultrametric auth login [options]
+```
+
+## ultrametric auth complete
+
+Check a pending login once and save the session after browser approval.
+
+```text
+ultrametric auth complete [options] <login-id>
+```
+
+## ultrametric auth status
+
+Show login status.
+
+```text
+ultrametric auth status [options]
+```
+
+## ultrametric auth logout
+
+Log out.
+
+```text
+ultrametric auth logout [options]
+```
+
+## ultrametric init
+
+Install the Ultrametric documentation skill in a project for Codex and Claude Code.
+
+```text
+ultrametric init [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--path <directory>` | Existing project directory (defaults to the current directory). |  | No |
+| `--agent <agent>` | Agent skill location to install. | all, codex, claude | No |
+| `--dry-run` | Preview changes without writing project files, settings, or logs. |  | No |
+| `--force` | Replace an existing Ultrametric SKILL.md that differs from the bundled version. |  | No |
+
+## ultrametric process
+
+Find guides and open hosted process runs.
+
+```text
+ultrametric process [options] [command] [id]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--process-version <number>` | Published process version (defaults to latest). |  | No |
+| `--path <directory>` | Local project context for company-profile or ai-native-assessment. |  | No |
+| `--company <uuid>` | Resume a local company-profile record. |  | No |
+| `--project <name>` | Project display name for ai-native-assessment. |  | No |
+
+## ultrametric process list
+
+List process IDs and purposes available to your account.
+
+```text
+ultrametric process list [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--limit <number>` | Processes per page, from 1 to 100. |  | No |
+| `--after <id>` | Cursor returned by the previous page. |  | No |
+
+## ultrametric process get
+
+Read a published guide by its exact ID.
+
+```text
+ultrametric process get [options] <id>
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--process-version <number>` | Published process version (defaults to latest). |  | No |
+| `--path <directory>` | Local project context for company-profile or ai-native-assessment. |  | No |
+| `--company <uuid>` | Resume a local company-profile record. |  | No |
+| `--project <name>` | Project display name for ai-native-assessment. |  | No |
+
+## ultrametric process open
+
+Start or resume a hosted run with its guide and saved context.
+
+```text
+ultrametric process open [options] <id>
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--company <uuid>` | Hosted company ID returned by context get. |  | No |
+| `--organization <id>` | Require the organization selected for this login. |  | No |
+| `--period <period>` | Recurring run period; omit for the default run. |  | No |
+
+## ultrametric context
+
+Read and save hosted company context through the API.
+
+```text
+ultrametric context [options] [command]
+```
+
+## ultrametric context schema
+
+Read the API input schema for open, save, or get.
+
+```text
+ultrametric context schema [options] <operation>
+```
+
+## ultrametric context save
+
+Save hosted progress, profiles, documents, or vault references.
+
+```text
+ultrametric context save [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--file <path>` | API save input as JSON; use - for stdin. |  | Yes |
+
+## ultrametric context get
+
+Read hosted companies, runs, records, or explicit history.
+
+```text
+ultrametric context get [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--file <path>` | API get input as JSON; use - for stdin. Cannot be combined with selectors. |  | No |
+| `--collection <collection>` | Collection to browse. | companies, runs, records | No |
+| `--organization <id>` | Require the organization selected for this login. |  | No |
+| `--company <uuid>` | Hosted company ID. |  | No |
+| `--run <uuid>` | Read one run and its next update key. |  | No |
+| `--record <uuid>` | Read one complete record. |  | No |
+| `--process <id>` | Filter runs by process. |  | No |
+| `--query <text>` | Search current records. |  | No |
+| `--history` | Read history for a selected run or record. |  | No |
+| `--before-revision <number>` | History cursor from the previous page. |  | No |
+| `--after <uuid>` | Collection cursor from the previous page. |  | No |
+| `--limit <number>` | Page size; the API permits 1 to 25. |  | No |
+
+## ultrametric understand
+
+Prepare a local profile with the legacy offline guide.
+
+```text
+ultrametric understand [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--path <directory>` | Project directory; the agent supplies its context. |  | No |
+| `--company <uuid>` | Resume this saved company profile and revision. |  | No |
+
+## ultrametric companies
+
+Validate, save, and retrieve local company profiles.
+
+```text
+ultrametric companies [options] [command]
+```
+
+## ultrametric companies schema
+
+Print the accepted company-profile JSON Schema.
+
+```text
+ultrametric companies schema [options]
+```
+
+## ultrametric companies validate
+
+Check profile structure without saving or approving it.
+
+```text
+ultrametric companies validate [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--file <path>` | Profile JSON file; use - for stdin. |  | Yes |
+
+## ultrametric companies save
+
+Save a reviewed local profile; updates require the current revision.
+
+```text
+ultrametric companies save [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--file <path>` | Raw profile JSON file; use - for stdin. |  | Yes |
+| `--id <uuid>` | New company ID for repeatable creation; the profile companyId must be null. |  | No |
+| `--revision <number>` | Expected revision for an existing company profile. |  | No |
+
+## ultrametric companies list
+
+List reviewed company profiles, most recently updated first.
+
+```text
+ultrametric companies list [options]
+```
+
+## ultrametric companies show
+
+Read a reviewed profile, sources, and current revision.
+
+```text
+ultrametric companies show [options] <id>
+```
+
+## ultrametric assess
+
+Give the active agent a project assessment guide, rubric, and JSON template.
+
+```text
+ultrametric assess [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--path <directory>` | Project directory; the agent performs the inspection. |  | No |
+| `--project <name>` | Display name (defaults to the directory name). |  | No |
+
+## ultrametric assessments
+
+Save and retrieve local project assessments.
+
+```text
+ultrametric assessments [options] [command]
+```
+
+## ultrametric assessments schema
+
+Print the accepted assessment JSON Schema.
+
+```text
+ultrametric assessments schema [options]
+```
+
+## ultrametric assessments save
+
+Validate and save findings from a JSON file or stdin.
+
+```text
+ultrametric assessments save [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--file <path>` | Assessment JSON file; use - for stdin. |  | Yes |
+| `--id <uuid>` | Reuse this UUID on retries; a different payload causes a conflict. |  | No |
+
+## ultrametric assessments list
+
+List saved assessments, newest first.
+
+```text
+ultrametric assessments list [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--project <name>` | Match the exact project display name. |  | No |
+
+## ultrametric assessments show
+
+Read an assessment, evidence, and action states.
+
+```text
+ultrametric assessments show [options] <id>
+```
+
+## ultrametric actions
+
+Record the actions the user has chosen.
+
+```text
+ultrametric actions [options] [command]
+```
+
+## ultrametric actions set
+
+Set an action status using the latest assessment revision.
+
+```text
+ultrametric actions set [options] <assessment-id> <action-id>
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--status <status>` | New action state. | proposed, planned, in_progress, done, dismissed | Yes |
+| `--revision <number>` | Expected current revision, from assessments show. |  | Yes |
+
+## ultrametric arena
+
+Read vendor ratings and cited evidence directly from ProductArena.
+
+```text
+ultrametric arena [options] [command]
+```
+
+## ultrametric arena categories
+
+List arena IDs for vendor research.
+
+```text
+ultrametric arena categories [options]
+```
+
+## ultrametric arena rankings
+
+Read the published vendor leaderboard for one arena.
+
+```text
+ultrametric arena rankings [options] <arena>
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--limit <number>` | Maximum products, from 1 to 100. |  | No |
+
+## ultrametric arena stories
+
+List evaluated capabilities and their story IDs.
+
+```text
+ultrametric arena stories [options] <arena>
+```
+
+## ultrametric arena verdict
+
+Read a capability verdict and its cited evidence.
+
+```text
+ultrametric arena verdict [options] <arena> <product> <story>
+```
+
+## ultrametric config
+
+Manage settings shared across all project directories.
+
+```text
+ultrametric config [options] [command]
+```
+
+## ultrametric config show
+
+Show your user settings and their location.
+
+```text
+ultrametric config show [options]
+```
+
+## ultrametric config set
+
+Set output text|json or logging true|false for all projects.
+
+```text
+ultrametric config set [options] <key> <value>
+```
+
+## ultrametric logs
+
+Inspect local command diagnostics.
+
+```text
+ultrametric logs [options] [command]
+```
+
+## ultrametric logs show
+
+Read recent command names, durations, and exit codes (newest first).
+
+```text
+ultrametric logs show [options]
+```
+
+| Option | Meaning | Choices | Required |
+| --- | --- | --- | --- |
+| `--limit <number>` | Maximum entries, from 1 to 1000. |  | No |
+
+## ultrametric doctor
+
+Show diagnostic information.
+
+```text
+ultrametric doctor [options]
+```

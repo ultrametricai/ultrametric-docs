@@ -1,0 +1,46 @@
+---
+title: "CLI settings and output"
+description: "Choose structured output and inspect where your agent keeps local data."
+---
+
+Use `--json` when an agent runs the CLI. Successful results appear on stdout as a `schemaVersion` and `data` object. Errors appear on stderr as a `schemaVersion` and `error` object containing a code and message, with recovery details when available.
+
+```sh
+ultrametric --json
+ultrametric process --help
+ultrametric context get --help
+```
+
+The first command lists commands and options as JSON. Use a command's `--help` to inspect its arguments. JSON mode does not launch a browser or prompt for input.
+
+## Settings
+
+```sh
+ultrametric config show --json
+ultrametric config set output json
+ultrametric config set logging false
+```
+
+`output` accepts `text` or `json`. `logging` accepts `true` or `false`. Use `--no-json` to request text for one command when the saved default is JSON.
+
+## Local files
+
+The default data directory is `~/.ultrametric`. Set `ULTRAMETRIC_DATA_DIR` or pass `--data-dir` to choose another directory. It holds settings, login sessions, diagnostics, and local company or assessment records.
+
+```sh
+ultrametric doctor --json
+```
+
+`doctor` reports the CLI version, selected API origin, and local file locations. Remove sensitive paths before sharing diagnostic output.
+
+Normal commands can initialize settings and append command diagnostics. `init --dry-run` previews setup without writing project files, settings, or logs.
+
+## Environment
+
+Production is the default and uses `https://api.ultrametric.ai`. The `--environment` option accepts `production` or `staging`. Use staging only when working with a staging account and test data.
+
+Keep the same environment throughout a task. Login sessions are separate for each environment; local records stay in the selected data directory.
+
+## Errors
+
+An invalid command or option returns exit code `3`. With `--json`, the error code is `USAGE` on stderr. Other failures have their own codes and recovery hints. Ask your agent to read those details before retrying, especially after a save.

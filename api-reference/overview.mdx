@@ -1,0 +1,30 @@
+---
+title: "HTTP API"
+description: "Read process guides and work with company context over HTTP."
+---
+
+The production API origin is `https://api.ultrametric.ai`. CLI and MCP use this service for process guides and hosted company records.
+
+Use the [operation reference](/api-reference/operations) for request fields, or download the [OpenAPI contract](/contracts/openapi.json) for request and response schemas. The service also exposes [its current contract](https://api.ultrametric.ai/openapi.json).
+
+## Authentication
+
+Operations require a bearer access token for the Ultrametric API. Use the appropriate CLI or MCP sign-in flow when using those interfaces. Tokens for a different application or environment are not interchangeable. Company-context operations also require organization membership and permissions; see [account access](/mcp/authentication).
+
+## Responses
+
+Successful responses contain `schemaVersion: 1` and a `data` object. The fields inside `data` depend on the operation. Error responses contain `schemaVersion: 1` and an `error` object with `code` and `message`.
+
+| Operation | Result |
+| --- | --- |
+| `GET /status` | Identity, environment, and optional process availability |
+| `GET /auth/workspace` | Selected or sole active workspace |
+| `GET /processes` | Available published guides |
+| `GET /processes/{id}` | Process instructions and result schema |
+| `POST /context/get` | Authorized saved context |
+| `POST /context/open` | Opened or resumed run |
+| `POST /context/save` | Save receipt and record revisions |
+
+`/context/get` uses POST to accept structured read selectors. `/context/open` and `/context/save` write hosted state. Keep the same organization and update key when retrying an uncertain save.
+
+For agent tool calls, use the [MCP tools](/mcp/tools) at `/mcp`. Keep access tokens and private request bodies out of support reports.
