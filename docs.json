@@ -66,7 +66,8 @@
   },
   "footer": {
     "socials": {
-      "discord": "https://discord.gg/3aHky836qP"
+      "discord": "https://discord.gg/3aHky836qP",
+      "github": "https://github.com/ultrametricai/ultrametric"
     }
   }
 }
