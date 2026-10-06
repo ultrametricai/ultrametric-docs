@@ -1,0 +1,30 @@
+---
+title: "Connect the product MCP"
+description: "Use the Ultrametric process endpoint from a host with remote MCP and OAuth support."
+---
+
+> Internal documentation draft. Public OAuth discovery was checked. A real client connection and login are still pending verification.
+
+Use this server URL in your host's remote MCP connection settings:
+
+```text
+https://api.ultrametric.ai/mcp
+```
+
+Complete the host's OAuth sign-in. Do not paste tokens into a conversation or commit them to configuration files. Client settings and OAuth behavior vary; use the host's current setup instructions.
+
+After connection, ask the agent to:
+
+1. Call `status` and report the environment and selected organization.
+2. Call `list_processes` and select an available process relevant to the request.
+3. Call `get_process` using its returned ID and summarize the instructions.
+
+This sequence reads service data. It does not open a run or save updates. See [the quickstart](/quickstart) for output fields and [the generated tool reference](/mcp/tools) for exact inputs.
+
+Use a separately named connection for staging at `https://api.ultrametric.dev/mcp`. Verify it independently. Do not switch an existing connection's environment as a recovery step or reuse production credentials in staging.
+
+## Text and optional views
+
+Process results contain useful text and structured data. The source attaches an optional conversation UI resource to the process catalog. That resource's presence does not establish rendering support in a desktop or mobile client. No rich-host support claim is made by this draft.
+
+Ultrametric's product MCP provides process and context operations. Any future Mintlify documentation-search MCP would search documentation. Its URL and tools must be documented separately after setup.

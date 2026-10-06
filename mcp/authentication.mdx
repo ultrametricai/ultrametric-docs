@@ -1,0 +1,29 @@
+---
+title: "Authentication and organization access"
+description: "Understand token audience, release access, and private context permissions."
+---
+
+> Internal documentation draft. Metadata and source contracts are verified; interactive OAuth and membership changes were not tested.
+
+The production OAuth resource metadata identifies `https://api.ultrametric.ai/mcp` and the authorization server `https://auth.ultrametric.ai`. The service accepts bearer tokens and verifies their signature, issuer, subject, time bounds, and target identity.
+
+The API also accepts its configured first-party AuthKit session tokens. That contract verifies the signed application client ID and validates an audience when present. A token issued for a different application or environment is not interchangeable.
+
+## Process access
+
+Process discovery is filtered by the caller's release access. A known ID may be unavailable to another account. `status` accepts an optional `processId` and reports `releaseAccess` and `available`. An empty catalog does not establish that the service has no processes.
+
+## Private context access
+
+Private context requires an organization-bound login and active membership. The API checks permissions on each request:
+
+| Operation | Required permissions |
+| --- | --- |
+| Read ordinary context | `context:read` |
+| Open a run or save ordinary context | `context:read` and `context:write` |
+| Read protected context | Additional `context:protected:read` |
+| Write protected context | Additional `context:protected:read` and `context:protected:write` |
+
+Roles only provide access through their assigned permissions. Supplying `organizationId` checks the selected scope; a mismatch is rejected. If membership or configuration cannot be verified, the service fails closed.
+
+Check `status` before diagnosing a missing company or record. The CLI's local `auth status` and MCP's server `status` have different scopes. Local session presence alone does not establish server acceptance or private-data permission.

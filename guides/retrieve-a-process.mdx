@@ -1,0 +1,20 @@
+---
+title: "Retrieve a specific version"
+description: "Page through available processes and keep the version used for a decision."
+---
+
+> Internal documentation draft. Commands and bounds are verified against the pinned CLI and API contracts.
+
+Start with `ultrametric process list --limit 25 --json` or MCP `list_processes`. When the result has a non-null `nextCursor`, pass that exact value as CLI `--after` or MCP `after`. Keep the same account and environment while paging. The list limit is 1 to 100; the default is 25.
+
+Use an ID returned by the catalog. CLI `process get` handles exact IDs, including IDs that might otherwise look like subcommands.
+
+```sh
+ultrametric process get RETURNED_PROCESS_ID --process-version RETURNED_VERSION --json
+```
+
+For MCP, call `get_process` with `id` and `version`. Versions are positive integers. Omitting the version requests the latest published version available to the caller. CLI `--version` prints the CLI package version; use `--process-version` to select a guide version.
+
+Retain the returned process ID and version with any reasoning based on the guide. A pinned guide can still be unavailable to an account. A failed request returns an error; the current CLI does not substitute a bundled process catalog.
+
+For the `company-profile` and `ai-native-assessment` adapters, the CLI can add local project context and a template with `--path`. Their schema compatibility is checked. Guide retrieval does not upload that local context. Inspect [generated options](/cli/commands) before using an adapter-specific flag.

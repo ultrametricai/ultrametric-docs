@@ -1,0 +1,37 @@
+---
+title: "Select output, environment, and storage"
+description: "Keep production, staging, hosted context, and local files explicit."
+---
+
+> Internal documentation draft. Options are generated from CLI 0.4.1.
+
+Use `--json` for structured results. Successful output is `{ "schemaVersion": 1, "data": ... }` on stdout. Errors are a versioned `error` object on stderr. JSON mode does not prompt or launch a browser. CLI discovery and help are available without login.
+
+```sh
+ultrametric --json
+ultrametric process --help
+ultrametric context get --help
+```
+
+## Environment
+
+Production is the default. The release supports `--environment production` and `--environment staging`.
+
+| Environment | API origin |
+| --- | --- |
+| Production | `https://api.ultrametric.ai` |
+| Staging | `https://api.ultrametric.dev` |
+
+Use the same environment throughout discovery, guide retrieval, and context work. Sessions are separated by environment. The environment option changes API and login selection; it does not move local records or authorize an automatic fallback.
+
+## Local data
+
+`--data-dir` or `ULTRAMETRIC_DATA_DIR` selects the local directory for settings, logs, sessions, and local records. The default is `~/.ultrametric`. `doctor --json` reports locations and the selected hosted origin; inspect that output before sharing it because it contains local paths.
+
+Normal commands may initialize settings and append command diagnostics. `--help`, `--version`, root discovery, and `init --dry-run` are useful first checks. A process API read does not create a hosted run, but the CLI can still write local diagnostics or refresh its login session.
+
+`config show` reads settings. `config set output json` changes the default output. `config set logging false` disables command diagnostics. These configuration writes were not performed in this draft.
+
+## Failure output
+
+The invalid-option fixture verified exit code `3`, an empty stdout, and JSON `USAGE` on stderr. Preserve the actual error code and recovery hint from other failures instead of assuming every nonzero exit has the same cause.

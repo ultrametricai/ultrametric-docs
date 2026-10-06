@@ -1,0 +1,32 @@
+---
+title: "HTTP process and context API"
+description: "Use the generated contract for authenticated process reads and scoped context operations."
+---
+
+> Internal documentation draft. The seven documented path schemas match the observed production contract. Hosted authenticated calls were not tested.
+
+The production origin is `https://api.ultrametric.ai`. Read the [generated OpenAPI document](/contracts/openapi.json) or [operation reference](/api-reference/operations). The service also publishes its contract at [the public schema endpoint](https://api.ultrametric.ai/openapi.json).
+
+Success responses use a versioned envelope:
+
+```json
+{ "schemaVersion": 1, "data": {} }
+```
+
+The empty `data` object above illustrates the envelope only. Each operation defines its actual data schema. Failures use `schemaVersion` and an `error` object with `code` and `message`.
+
+| Operation | Effect |
+| --- | --- |
+| `GET /status` | Read identity, environment, and optional process availability |
+| `GET /auth/workspace` | Resolve the selected or sole active workspace |
+| `GET /processes` | List available published guides |
+| `GET /processes/{id}` | Retrieve instructions and result schema |
+| `POST /context/get` | Read authorized context |
+| `POST /context/open` | Start or resume a stored run |
+| `POST /context/save` | Append progress and record revisions |
+
+HTTP method alone does not identify a write: `/context/get` uses POST for structured read selectors. Follow the operation's documented effect and authorization requirements.
+
+Use [authentication and scope](/mcp/authentication) for the bearer-token contracts. Tokens and private payloads should not be included in support reports or documentation examples. The API reference has no live request playground configured.
+
+`/mcp` uses the MCP protocol; its tool input schemas are in the [MCP reference](/mcp/tools).

@@ -1,0 +1,19 @@
+---
+title: "Plugins and project skills"
+description: "Use the verified CLI skill targets and track the remaining distribution checks."
+---
+
+> Internal documentation draft. CLI skill-path generation was tested. Host loading and marketplace installation were not tested.
+
+The published CLI includes an Ultrametric skill and can install it into a project for Codex or Claude Code. The skill explains how an agent should use the CLI, process guides, and company context. The CLI executable must be available to the agent.
+
+| Surface | Evidence | Guide |
+| --- | --- | --- |
+| Codex project skill | Installer path and dry-run verified in CLI 0.4.1 | [Codex](/plugins/codex) |
+| Claude Code project skill | Installer path and dry-run verified in CLI 0.4.1 | [Claude Code](/plugins/claude-code) |
+| Remote MCP connection | API source and OAuth metadata verified | [MCP setup](/mcp/connect) |
+| Marketplace plugin | Manifest and release channel not verified | Pending |
+
+No product plugin manifest was found in the scoped CLI tag and API/public implementation source inspection. That search does not prove one is absent elsewhere. A marketplace page needs the actual manifest, distribution URL, version, permissions, and a client installation test before it can be published.
+
+Installing project guidance does not configure MCP, sign in, or synchronize local records. Do not infer support for additional hosts from the existence of a Markdown skill.

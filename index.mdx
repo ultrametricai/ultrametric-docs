@@ -1,0 +1,36 @@
+---
+title: "Use Ultrametric with your agent"
+description: "Find process guidance and reuse company context through CLI or MCP."
+---
+
+> Internal documentation draft. Publication and client verification are pending.
+
+Ultrametric supplies process instructions, result schemas, and saved company context. Your active agent reads the instructions, applies your project context, and uses its available tools to do the work.
+
+Use the [read-only quickstart](/quickstart) to check a connection and retrieve a guide. Use [processes, runs, and context](/concepts/process-run-context) to understand what gets stored.
+
+| Connection | What it provides | Requirements |
+| --- | --- | --- |
+| [CLI](/cli/install) | Process access, hosted context, local records, and project skill setup | Terminal access and Node.js 22.12 or later |
+| [MCP](/mcp/connect) | Process and context tools in an agent host | Remote MCP and OAuth support |
+| [Project skills](/plugins/overview) | Instructions for using Ultrametric from a project | CLI setup target for Codex or Claude Code |
+
+## Verification scope
+
+| Evidence | Status |
+| --- | --- |
+| npm package `ultrametric@0.4.1` | Public registry metadata observed; Git commit matches local tag |
+| CLI command reference | Generated from that tag; help, discovery, and setup preview tested locally |
+| HTTP process/context schemas | Generated from API source; seven documented paths match the observed production schema |
+| Six MCP tools | Discovered through the actual handler and SDK with synthetic data |
+| Process list/get across CLI and MCP | Synthetic read-only fixture checked; no live signed-in retrieval |
+| OAuth login, private context persistence, rich client UI | Not tested in this draft |
+| Marketplace plugins and additional client platforms | Release/installation evidence still needed |
+
+The endpoint's catalog depends on the account and release access. Retrieve an available ID rather than assuming a fixed list or process count. Public release metadata and validation limits are in the [provenance record](/contracts/provenance.json).
+
+## Where process content comes from
+
+Public `ultrametricai/ultrametric` owns shared process definitions. The API combines that public content with versioned private additions and serves the guide and result schema. CLI and MCP access that service. This documentation does not maintain a second process catalog.
+
+Opening a run or saving context records work. These operations do not submit filings, purchase services, change third-party accounts, or verify that an external action happened.

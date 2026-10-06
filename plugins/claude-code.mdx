@@ -1,0 +1,22 @@
+---
+title: "Preview the Claude Code project skill"
+description: "Inspect the CLI's proposed Claude Code skill file before installation."
+---
+
+> Internal documentation draft. Target-path and no-write preview verified locally; Claude Code loading not tested.
+
+From an existing project directory with CLI 0.4.1 available:
+
+```sh
+ultrametric init --agent claude --dry-run --json
+```
+
+The proposed target is:
+
+```text
+.claude/skills/ultrametric/SKILL.md
+```
+
+Inspect `files` and `conflicts`. Remove `--dry-run` only when project-file installation is intended. Review differing guidance before using `--force`; keep project-specific instructions outside the generated skill if they must survive replacement.
+
+The installer accepts `claude` as the target value. It does not start a server or configure MCP. Confirm the agent can load the skill and run the installed CLI in the project before treating the host integration as verified.

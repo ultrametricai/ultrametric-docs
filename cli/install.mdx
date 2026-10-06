@@ -1,0 +1,44 @@
+---
+title: "Install the CLI"
+description: "Use the verified npm package and inspect project setup before writing files."
+---
+
+> Internal documentation draft. npm metadata confirms 0.4.1. Installation and real sign-in were not performed for this draft.
+
+The CLI requires Node.js 22.12 or later. The package name and executable are both `ultrametric`.
+
+```sh
+npm install -g ultrametric@0.4.1
+ultrametric --version
+```
+
+The version pin matches this draft. Review later releases before changing it. With a Node version manager, install for the Node environment used by your terminal or agent.
+
+## Preview project guidance
+
+Run this from an existing project directory:
+
+```sh
+ultrametric init --dry-run --json
+```
+
+The result lists the proposed Codex and Claude Code skill files and any conflicts. This preview does not write project files, settings, or logs. The preview behavior was tested in an empty temporary project.
+
+`init` without `--dry-run` installs those files. Choose `--agent codex` or `--agent claude` for one target. Review a differing skill before using `--force`, which replaces its contents. See [project skills](/plugins/overview).
+
+## Sign in when needed
+
+```sh
+ultrametric auth status --json
+ultrametric auth login --json
+```
+
+JSON login returns a verification URL, user code, and login ID without opening a browser. Show the verification information to the user. Once they approve sign-in, use the returned login ID:
+
+```sh
+ultrametric auth complete RETURNED_LOGIN_ID --json
+```
+
+Completion checks once; follow the returned `retryAfter` when pending. Do not keep retrying an expired login. Login saves a session, and browser setup can involve workspace creation or selection. Those are account actions outside the read-only draft verification.
+
+Continue with [the first-guide quickstart](/quickstart).

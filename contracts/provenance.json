@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-05T22:54:52.225Z",
+  "cli": {
+    "package": "ultrametric",
+    "version": "0.4.1",
+    "commit": "527555872f93290415c8978ee4872e420c4b638a",
+    "releaseEvidence": "https://registry.npmjs.org/ultrametric/latest",
+    "npmIntegrity": "sha512-BwEADdOCyE01Db/Aky5L4ifTZUxsJ4guBPRvaJHNOF9UtVfvD8mtJaOg6+LfY0HiSeMeL/jlBnBb5/xr3/4BnQ=="
+  },
+  "api": {
+    "openapiVersion": "1.0.0",
+    "deployedSchemaUrl": "https://api.ultrametric.ai/openapi.json",
+    "deployedSchemaSha256": "13cd04535ea1c63fd4b4b2610762c1a442a2c54a8fb8495b023631f054d6d59b",
+    "deploymentCommit": "unverified"
+  },
+  "publicProcesses": {
+    "repository": "https://github.com/ultrametricai/ultrametric",
+    "source": "content/processes/records",
+    "copiedRecords": 0
+  },
+  "mcp": {
+    "toolCount": 6,
+    "discovery": "actual handler through synthetic in-memory SDK transport",
+    "hostedAuthentication": "not tested",
+    "uiRendering": "not tested"
+  },
+  "schemaComparison": {
+    "publicReference": "exact match to deployed schema after filtering to seven documented product paths",
+    "otherOperations": "staff-only and UI snapshot-preview operations excluded"
+  },
+  "mintlify": {
+    "schema": "https://mintlify.com/docs.json",
+    "schemaSha256": "befc7a49d12205f7bcdc6527bff091090fe8e0f3c807bd41b4d2c2c779e93750",
+    "configurationValidation": "passed JSON Schema validation",
+    "rendered": false
+  },
+  "plugins": {
+    "cliProjectSkillTargets": [
+      "codex",
+      "claude"
+    ],
+    "hostLoading": "not tested",
+    "marketplaceInstallation": "not verified"
+  }
+}

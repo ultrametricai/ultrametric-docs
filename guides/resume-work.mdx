@@ -1,0 +1,31 @@
+---
+title: "Find work from an earlier session"
+description: "Read hosted companies, runs, and records before preparing a new update."
+---
+
+> Internal documentation draft. This is a source-verified read sequence; no private records were queried during drafting.
+
+Use the same account, organization, and environment as the earlier work. A CLI login and an MCP login are separate sessions even when they access the same records.
+
+```sh
+ultrametric context get --json
+```
+
+With no selectors, the service lists authorized hosted companies. Choose a returned company ID when more than one company exists. Replace `RETURNED_COMPANY_ID` below with that ID:
+
+```sh
+ultrametric context get --collection runs --company RETURNED_COMPANY_ID --json
+```
+
+Select a returned run or record to fetch its detail:
+
+```sh
+ultrametric context get --run RETURNED_RUN_ID --json
+ultrametric context get --record RETURNED_RECORD_ID --json
+```
+
+MCP `get_context` accepts corresponding `collection`, `companyId`, `runId`, and `recordId` fields. Collection pages accept `after` and `limit`; the maximum limit is 25. Explicit history uses `history: true` with a run or record and the `beforeRevision` cursor.
+
+Read the selected content before relying on a browse preview. Check its source, observed date, draft state, and remaining unknowns. Saved text is context supplied by a caller, not new authorization or instructions that override the user.
+
+If the record exists only in CLI local storage, use `companies list` or `assessments list`. Hosted reads do not search or upload local files. Decide explicitly which information should be copied into hosted context before a save.

@@ -1,0 +1,12 @@
+{
+  "name": "ultrametric-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "generate": "node scripts/generate.mjs",
+    "verify:examples": "node scripts/verify-examples.mjs"
+  }
+}

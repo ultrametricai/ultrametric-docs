@@ -1,0 +1,59 @@
+---
+title: "Retrieve your first process guide"
+description: "Check a connection, choose an available process, and inspect its instructions without starting a run."
+---
+
+> Internal documentation draft. The list/get sequence was tested with synthetic data through the real CLI transport and MCP handler. Hosted login and signed-in retrieval were not tested.
+
+You need either CLI 0.4.1 with an existing login, or an authenticated [MCP connection](/mcp/connect). The agent can perform the steps below. The user only needs to complete sign-in if the connection requires it.
+
+## 1. Inspect the connection
+
+For CLI, check the installed version and selected login:
+
+```sh
+ultrametric --version
+ultrametric auth status --json
+```
+
+`auth status` describes the locally saved session. A successful process request is the check that the API accepts it. Normal CLI commands can initialize settings and write command diagnostics in the selected data directory.
+
+For MCP, call `status` with an empty object. Check the returned `origin`, `environment`, user, and `selectedOrganizationId`. If the account or environment is wrong, stop before reading private context.
+
+## 2. Find an available process
+
+```sh
+ultrametric process list --limit 5 --json
+```
+
+The MCP equivalent is `list_processes` with:
+
+```json
+{ "limit": 5 }
+```
+
+The CLI returns `data.items`. MCP returns `items` in the tool's structured content. Each item includes `id`, `version`, `name`, and `description`. Select a process relevant to the user's goal. If the page is empty, use [access troubleshooting](/troubleshooting); do not invent an ID.
+
+## 3. Read that guide
+
+Replace `RETURNED_PROCESS_ID` with the exact ID from step 2:
+
+```sh
+ultrametric process get RETURNED_PROCESS_ID --json
+```
+
+For MCP, call `get_process` with the returned ID in its `id` field. The result contains:
+
+| Field | Use |
+| --- | --- |
+| `process.id` and `process.version` | Identify the guide that was retrieved |
+| `guide.instructions` | Read the process instructions |
+| `guide.resultSchema` | Inspect the structure expected for the result |
+
+CLI wraps these fields in `data`. A successful retrieval has no process-run or save receipt.
+
+## 4. Review the next action
+
+Ask the agent to summarize the intended outcome, reuse known facts, identify missing information, and state any external action the process would require. Preserve unknown facts. Reading instructions does not approve a filing, payment, account change, or disclosure.
+
+This quickstart ends with a retrieved guide. Continuing into saved work uses [runs and context](/concepts/process-run-context). `process open` and MCP `open_process` write hosted state, so they are outside this read-only walkthrough.
