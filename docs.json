@@ -63,5 +63,10 @@
         ]
       }
     ]
+  },
+  "footer": {
+    "socials": {
+      "discord": "https://discord.gg/3aHky836qP"
+    }
   }
 }
