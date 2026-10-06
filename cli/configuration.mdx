@@ -1,11 +1,9 @@
 ---
-title: "Select output, environment, and storage"
-description: "Keep production, staging, hosted context, and local files explicit."
+title: "CLI settings and output"
+description: "Choose structured output and inspect where your agent keeps local data."
 ---
 
-> Internal documentation draft. Options are generated from CLI 0.4.1.
-
-Use `--json` for structured results. Successful output is `{ "schemaVersion": 1, "data": ... }` on stdout. Errors are a versioned `error` object on stderr. JSON mode does not prompt or launch a browser. CLI discovery and help are available without login.
+Use `--json` when an agent runs the CLI. Successful results appear on stdout as a `schemaVersion` and `data` object. Errors appear on stderr as a `schemaVersion` and `error` object containing a code and message, with recovery details when available.
 
 ```sh
 ultrametric --json
@@ -13,25 +11,36 @@ ultrametric process --help
 ultrametric context get --help
 ```
 
+The first command lists commands and options as JSON. Use a command's `--help` to inspect its arguments. JSON mode does not launch a browser or prompt for input.
+
+## Settings
+
+```sh
+ultrametric config show --json
+ultrametric config set output json
+ultrametric config set logging false
+```
+
+`output` accepts `text` or `json`. `logging` accepts `true` or `false`. Use `--no-json` to request text for one command when the saved default is JSON.
+
+## Local files
+
+The default data directory is `~/.ultrametric`. Set `ULTRAMETRIC_DATA_DIR` or pass `--data-dir` to choose another directory. It holds settings, login sessions, diagnostics, and local company or assessment records.
+
+```sh
+ultrametric doctor --json
+```
+
+`doctor` reports the CLI version, selected API origin, and local file locations. Remove sensitive paths before sharing diagnostic output.
+
+Normal commands can initialize settings and append command diagnostics. `init --dry-run` previews setup without writing project files, settings, or logs.
+
 ## Environment
 
-Production is the default. The release supports `--environment production` and `--environment staging`.
+Production is the default and uses `https://api.ultrametric.ai`. The `--environment` option accepts `production` or `staging`. Use staging only when working with a staging account and test data.
 
-| Environment | API origin |
-| --- | --- |
-| Production | `https://api.ultrametric.ai` |
-| Staging | `https://api.ultrametric.dev` |
+Keep the same environment throughout a task. Login sessions are separate for each environment; local records stay in the selected data directory.
 
-Use the same environment throughout discovery, guide retrieval, and context work. Sessions are separated by environment. The environment option changes API and login selection; it does not move local records or authorize an automatic fallback.
+## Errors
 
-## Local data
-
-`--data-dir` or `ULTRAMETRIC_DATA_DIR` selects the local directory for settings, logs, sessions, and local records. The default is `~/.ultrametric`. `doctor --json` reports locations and the selected hosted origin; inspect that output before sharing it because it contains local paths.
-
-Normal commands may initialize settings and append command diagnostics. `--help`, `--version`, root discovery, and `init --dry-run` are useful first checks. A process API read does not create a hosted run, but the CLI can still write local diagnostics or refresh its login session.
-
-`config show` reads settings. `config set output json` changes the default output. `config set logging false` disables command diagnostics. These configuration writes were not performed in this draft.
-
-## Failure output
-
-The invalid-option fixture verified exit code `3`, an empty stdout, and JSON `USAGE` on stderr. Preserve the actual error code and recovery hint from other failures instead of assuming every nonzero exit has the same cause.
+An invalid command or option returns exit code `3`. With `--json`, the error code is `USAGE` on stderr. Other failures have their own codes and recovery hints. Ask your agent to read those details before retrying, especially after a save.

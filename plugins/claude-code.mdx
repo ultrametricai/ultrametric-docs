@@ -1,22 +1,30 @@
 ---
-title: "Preview the Claude Code project skill"
-description: "Inspect the CLI's proposed Claude Code skill file before installation."
+title: "Use with Claude Code"
+description: "Install Ultrametric project instructions for Claude Code."
 ---
 
-> Internal documentation draft. Target-path and no-write preview verified locally; Claude Code loading not tested.
-
-From an existing project directory with CLI 0.4.1 available:
+Make the [CLI](/cli/install) available in the terminal environment used by Claude Code. From your project directory:
 
 ```sh
 ultrametric init --agent claude --dry-run --json
+ultrametric init --agent claude --json
 ```
 
-The proposed target is:
+The first command previews the change. The second writes:
 
 ```text
 .claude/skills/ultrametric/SKILL.md
 ```
 
-Inspect `files` and `conflicts`. Remove `--dry-run` only when project-file installation is intended. Review differing guidance before using `--force`; keep project-specific instructions outside the generated skill if they must survive replacement.
+The installer uses `claude` as the target value. Add `--path` to choose a different existing project directory. Review a conflicting file before using `--force` to replace it.
 
-The installer accepts `claude` as the target value. It does not start a server or configure MCP. Confirm the agent can load the skill and run the installed CLI in the project before treating the host integration as verified.
+Start or refresh a Claude Code session in the project, then ask:
+
+```text
+Use Ultrametric to help with this project's company setup.
+Find the relevant process and reuse what we already know.
+```
+
+If the skill is not available, check the file and open a fresh session in that project. The agent can also inspect `ultrametric --help` directly.
+
+Complete [CLI sign-in](/cli/install) for hosted operations. If you want remote tools rather than terminal commands, configure [MCP](/mcp/connect) separately.

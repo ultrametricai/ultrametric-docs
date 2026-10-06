@@ -1,59 +1,58 @@
 ---
-title: "Retrieve your first process guide"
-description: "Check a connection, choose an available process, and inspect its instructions without starting a run."
+title: "Get started with your agent"
+description: "Find a process, read its instructions, and decide what to do next."
 ---
 
-> Internal documentation draft. The list/get sequence was tested with synthetic data through the real CLI transport and MCP handler. Hosted login and signed-in retrieval were not tested.
+First [install the CLI and sign in](/cli/install), or [connect MCP](/mcp/connect). Your agent can run the commands or call the tools below. You complete any browser sign-in step.
 
-You need either CLI 0.4.1 with an existing login, or an authenticated [MCP connection](/mcp/connect). The agent can perform the steps below. The user only needs to complete sign-in if the connection requires it.
+## 1. Give your agent a goal
 
-## 1. Inspect the connection
+Be specific about the outcome and any constraints you already know:
 
-For CLI, check the installed version and selected login:
+```text
+Use Ultrametric to find the next company-setup process for this project.
+Use the project information we already have and show me the proposed next step.
+```
+
+The agent should reuse known facts and leave missing information marked as unknown.
+
+## 2. Check the account
+
+With the CLI:
 
 ```sh
 ultrametric --version
 ultrametric auth status --json
 ```
 
-`auth status` describes the locally saved session. A successful process request is the check that the API accepts it. Normal CLI commands can initialize settings and write command diagnostics in the selected data directory.
+Check the account, selected organization, and environment in the result. CLI login status describes the saved session; the next API request checks whether the service accepts it.
 
-For MCP, call `status` with an empty object. Check the returned `origin`, `environment`, user, and `selectedOrganizationId`. If the account or environment is wrong, stop before reading private context.
+With MCP, ask the agent to call `status` with `{}` and check the returned account, environment, and `selectedOrganizationId`.
 
-## 2. Find an available process
+## 3. Find and read a process
+
+With the CLI:
 
 ```sh
 ultrametric process list --limit 5 --json
 ```
 
-The MCP equivalent is `list_processes` with:
+With MCP, call `list_processes` with `{"limit": 5}`.
 
-```json
-{ "limit": 5 }
-```
-
-The CLI returns `data.items`. MCP returns `items` in the tool's structured content. Each item includes `id`, `version`, `name`, and `description`. Select a process relevant to the user's goal. If the page is empty, use [access troubleshooting](/troubleshooting); do not invent an ID.
-
-## 3. Read that guide
-
-Replace `RETURNED_PROCESS_ID` with the exact ID from step 2:
+Each returned item has an `id`, `version`, `name`, and `description`. Choose an item relevant to your goal. Replace `PROCESS_ID` below with its exact ID:
 
 ```sh
-ultrametric process get RETURNED_PROCESS_ID --json
+ultrametric process get PROCESS_ID --json
 ```
 
-For MCP, call `get_process` with the returned ID in its `id` field. The result contains:
+The MCP equivalent is `get_process`, with that ID in the `id` field.
 
-| Field | Use |
-| --- | --- |
-| `process.id` and `process.version` | Identify the guide that was retrieved |
-| `guide.instructions` | Read the process instructions |
-| `guide.resultSchema` | Inspect the structure expected for the result |
+Both interfaces return `process.id`, `process.version`, `guide.instructions`, and `guide.resultSchema`. The CLI wraps them in `data`. The agent reads the instructions and uses the result schema when preparing structured output.
 
-CLI wraps these fields in `data`. A successful retrieval has no process-run or save receipt.
+If the catalog is empty or the request fails, use [troubleshooting](/troubleshooting).
 
-## 4. Review the next action
+## 4. Continue the work
 
-Ask the agent to summarize the intended outcome, reuse known facts, identify missing information, and state any external action the process would require. Preserve unknown facts. Reading instructions does not approve a filing, payment, account change, or disclosure.
+Ask the agent to explain the next useful action and collect any information it needs from you. To keep progress for later sessions, [open a run and save updates](/guides/save-progress).
 
-This quickstart ends with a retrieved guide. Continuing into saved work uses [runs and context](/concepts/process-run-context). `process open` and MCP `open_process` write hosted state, so they are outside this read-only walkthrough.
+Reading a guide leaves hosted records unchanged. Opening a run creates or resumes saved work. Your agent uses its available tools for external actions and follows your authorization for those actions.

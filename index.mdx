@@ -1,36 +1,32 @@
 ---
 title: "Use Ultrametric with your agent"
-description: "Find process guidance and reuse company context through CLI or MCP."
+description: "Get process guidance and carry company context between sessions."
 ---
 
-> Internal documentation draft. Publication and client verification are pending.
+Ultrametric gives your agent process instructions, result formats, and saved company context. Tell your agent what you want to achieve. It can find a relevant process, use what it already knows about your project, and keep track of the work.
 
-Ultrametric supplies process instructions, result schemas, and saved company context. Your active agent reads the instructions, applies your project context, and uses its available tools to do the work.
+For example:
 
-Use the [read-only quickstart](/quickstart) to check a connection and retrieve a guide. Use [processes, runs, and context](/concepts/process-run-context) to understand what gets stored.
+```text
+Use Ultrametric to help me set up the company behind this project.
+Start with what you already know, and ask me for any missing details.
+```
 
-| Connection | What it provides | Requirements |
+## Choose a connection
+
+Use the **CLI** when your agent can run terminal commands and work with project files. Use **MCP** when your agent supports remote tools through an MCP connection.
+
+| Connection | Setup | What you need |
 | --- | --- | --- |
-| [CLI](/cli/install) | Process access, hosted context, local records, and project skill setup | Terminal access and Node.js 22.12 or later |
-| [MCP](/mcp/connect) | Process and context tools in an agent host | Remote MCP and OAuth support |
-| [Project skills](/plugins/overview) | Instructions for using Ultrametric from a project | CLI setup target for Codex or Claude Code |
+| CLI | [Install and sign in](/cli/install) | Terminal access and Node.js 22.12 or later |
+| MCP | [Connect Ultrametric](/mcp/connect) | An agent host with remote MCP and OAuth support |
 
-## Verification scope
+Both connections use the same process service and hosted company records. Sign in to the same account and organization to continue work across them.
 
-| Evidence | Status |
-| --- | --- |
-| npm package `ultrametric@0.4.1` | Public registry metadata observed; Git commit matches local tag |
-| CLI command reference | Generated from that tag; help, discovery, and setup preview tested locally |
-| HTTP process/context schemas | Generated from API source; seven documented paths match the observed production schema |
-| Six MCP tools | Discovered through the actual handler and SDK with synthetic data |
-| Process list/get across CLI and MCP | Synthetic read-only fixture checked; no live signed-in retrieval |
-| OAuth login, private context persistence, rich client UI | Not tested in this draft |
-| Marketplace plugins and additional client platforms | Release/installation evidence still needed |
+## Start with a process
 
-The endpoint's catalog depends on the account and release access. Retrieve an available ID rather than assuming a fixed list or process count. Public release metadata and validation limits are in the [provenance record](/contracts/provenance.json).
+Follow the [quickstart](/quickstart) to find a process and read its guide. The agent uses the guide with your context and the tools available in your session. Available processes can differ by account.
 
-## Where process content comes from
+As work progresses, [save decisions and results](/guides/save-progress). In a later session, [find the saved run](/guides/resume-work) and continue from it.
 
-Public `ultrametricai/ultrametric` owns shared process definitions. The API combines that public content with versioned private additions and serves the guide and result schema. CLI and MCP access that service. This documentation does not maintain a second process catalog.
-
-Opening a run or saving context records work. These operations do not submit filings, purchase services, change third-party accounts, or verify that an external action happened.
+If you use Codex or Claude Code, you can also [add project skills](/plugins/overview) so your agent has Ultrametric instructions in the project.

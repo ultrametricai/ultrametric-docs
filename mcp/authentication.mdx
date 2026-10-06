@@ -1,29 +1,39 @@
 ---
-title: "Authentication and organization access"
-description: "Understand token audience, release access, and private context permissions."
+title: "Account and organization access"
+description: "Use the correct account, organization, and permissions for saved work."
 ---
 
-> Internal documentation draft. Metadata and source contracts are verified; interactive OAuth and membership changes were not tested.
+Your login determines which processes and company records your agent can access. CLI and MCP have separate sessions, so check both when switching between them.
 
-The production OAuth resource metadata identifies `https://api.ultrametric.ai/mcp` and the authorization server `https://auth.ultrametric.ai`. The service accepts bearer tokens and verifies their signature, issuer, subject, time bounds, and target identity.
+With the CLI, `ultrametric auth status --json` shows the locally saved session. With MCP, call `status` to read the account, environment, and selected organization from the service.
 
-The API also accepts its configured first-party AuthKit session tokens. That contract verifies the signed application client ID and validates an audience when present. A token issued for a different application or environment is not interchangeable.
+## Find the right organization
 
-## Process access
+Check `selectedOrganizationId` in the MCP status result, or `organizationId` in CLI login status. If the organization is missing or incorrect, complete sign-in for the intended workspace before continuing with company records.
 
-Process discovery is filtered by the caller's release access. A known ID may be unavailable to another account. `status` accepts an optional `processId` and reports `releaseAccess` and `available`. An empty catalog does not establish that the service has no processes.
+A request's `organizationId` checks the selected scope. It cannot grant membership or switch the account's organization.
 
-## Private context access
+## Process availability
 
-Private context requires an organization-bound login and active membership. The API checks permissions on each request:
+The process catalog lists the guides available to your account. If a process is missing, ask the agent to call MCP `status` with its `processId`. The result includes `releaseAccess` and `available`.
 
-| Operation | Required permissions |
+Use IDs returned by `list_processes` or `ultrametric process list`. A process available to one account may not be available to another.
+
+## Context permissions
+
+Hosted context requires active organization membership and the appropriate permissions:
+
+| Action | Permissions |
 | --- | --- |
-| Read ordinary context | `context:read` |
+| Read ordinary company context | `context:read` |
 | Open a run or save ordinary context | `context:read` and `context:write` |
-| Read protected context | Additional `context:protected:read` |
-| Write protected context | Additional `context:protected:read` and `context:protected:write` |
+| Read protected context | Also `context:protected:read` |
+| Save protected context | Also `context:protected:read` and `context:protected:write` |
 
-Roles only provide access through their assigned permissions. Supplying `organizationId` checks the selected scope; a mismatch is rejected. If membership or configuration cannot be verified, the service fails closed.
+If a context operation is denied, check the selected organization and ask your workspace administrator to review your access. Changing a role affects access through the permissions assigned to it.
 
-Check `status` before diagnosing a missing company or record. The CLI's local `auth status` and MCP's server `status` have different scopes. Local session presence alone does not establish server acceptance or private-data permission.
+## Token errors
+
+Use the sign-in flow for the selected connection and environment. Tokens for another application or environment cannot be substituted. The production MCP connection uses `https://auth.ultrametric.ai` for OAuth.
+
+On `AUTH_REQUIRED` or HTTP 401, sign in again and retry the read. See [CLI sign-in](/cli/install) or [MCP connection](/mcp/connect).

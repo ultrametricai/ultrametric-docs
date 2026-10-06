@@ -2,16 +2,66 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Ultrametric",
-  "colors": { "primary": "#059669", "light": "#10B981", "dark": "#059669" },
+  "colors": {
+    "primary": "#059669",
+    "light": "#10B981",
+    "dark": "#059669"
+  },
   "navigation": {
     "groups": [
-      { "group": "Start", "pages": ["index", "quickstart", "guides/retrieve-a-process"] },
-      { "group": "Processes and context", "pages": ["concepts/process-run-context", "guides/resume-work"] },
-      { "group": "CLI", "pages": ["cli/install", "cli/configuration", "cli/commands"] },
-      { "group": "MCP", "pages": ["mcp/connect", "mcp/authentication", "mcp/tools"] },
-      { "group": "Plugins and skills", "pages": ["plugins/overview", "plugins/codex", "plugins/claude-code"] },
-      { "group": "HTTP API", "pages": ["api-reference/overview", "api-reference/operations"] },
-      { "group": "Help", "pages": ["troubleshooting", "changelog"] }
+      {
+        "group": "Get started",
+        "pages": [
+          "index",
+          "quickstart",
+          "guides/retrieve-a-process"
+        ]
+      },
+      {
+        "group": "Working with processes",
+        "pages": [
+          "concepts/process-run-context",
+          "guides/save-progress",
+          "guides/resume-work"
+        ]
+      },
+      {
+        "group": "CLI",
+        "pages": [
+          "cli/install",
+          "cli/configuration",
+          "cli/commands"
+        ]
+      },
+      {
+        "group": "MCP",
+        "pages": [
+          "mcp/connect",
+          "mcp/authentication",
+          "mcp/tools"
+        ]
+      },
+      {
+        "group": "Agent setup",
+        "pages": [
+          "plugins/overview",
+          "plugins/codex",
+          "plugins/claude-code"
+        ]
+      },
+      {
+        "group": "HTTP API",
+        "pages": [
+          "api-reference/overview",
+          "api-reference/operations"
+        ]
+      },
+      {
+        "group": "Help",
+        "pages": [
+          "troubleshooting"
+        ]
+      }
     ]
   }
 }

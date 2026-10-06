@@ -1,11 +1,9 @@
 ---
 title: "HTTP operations"
-description: "Generated request contracts for process and context operations."
+description: "Request fields for process discovery, runs, and saved context."
 ---
 
-> Internal documentation draft. Generated from pinned source; see the [verification scope](/index).
-
-Source: the owning API’s `openApi()` exporter. The downloadable [OpenAPI contract](/contracts/openapi.json) retains success and error response schemas. Internal status and snapshot-preview endpoints are outside this product reference.
+Send requests to `https://api.ultrametric.ai` with an OAuth bearer token. See [authentication and responses](/api-reference/overview) before calling an operation. The [OpenAPI contract](/contracts/openapi.json) includes exact input constraints and success and error response schemas.
 
 ## getStatus
 
@@ -15,19 +13,9 @@ GET /status
 
 Read the signed-in identity and optional process access.
 
-```json
-[
-  {
-    "name": "processId",
-    "in": "query",
-    "schema": {
-      "type": "string",
-      "maxLength": 100,
-      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    }
-  }
-]
-```
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `processId` | query | string | No | Maximum characters: 100 |
 
 ## resolveWorkspace
 
@@ -45,46 +33,11 @@ GET /processes
 
 List the latest published process versions available to you.
 
-```json
-[
-  {
-    "name": "X-Ultrametric-Interaction-Medium",
-    "in": "header",
-    "description": "Client-reported interaction medium. Missing or unsupported values use unknown.",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "string",
-      "enum": [
-        "terminal",
-        "terminal_agent",
-        "desktop_agent",
-        "mobile_agent",
-        "web",
-        "unknown"
-      ]
-    }
-  },
-  {
-    "name": "limit",
-    "in": "query",
-    "schema": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 100,
-      "default": 25
-    }
-  },
-  {
-    "name": "after",
-    "in": "query",
-    "schema": {
-      "type": "string",
-      "maxLength": 100,
-      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    }
-  }
-]
-```
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `X-Ultrametric-Interaction-Medium` | header | string | No | Client-reported interaction medium. Missing or unsupported values use unknown. `terminal`, `terminal_agent`, `desktop_agent`, `mobile_agent`, `web`, `unknown` |
+| `limit` | query | integer | No | Minimum: 1; Maximum: 100; Default: `25` |
+| `after` | query | string | No | Maximum characters: 100 |
 
 ## getProcess
 
@@ -94,47 +47,11 @@ GET /processes/{id}
 
 Read a process guide and result schema.
 
-```json
-[
-  {
-    "name": "X-Ultrametric-Interaction-Medium",
-    "in": "header",
-    "description": "Client-reported interaction medium. Missing or unsupported values use unknown.",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "string",
-      "enum": [
-        "terminal",
-        "terminal_agent",
-        "desktop_agent",
-        "mobile_agent",
-        "web",
-        "unknown"
-      ]
-    }
-  },
-  {
-    "name": "id",
-    "in": "path",
-    "required": true,
-    "schema": {
-      "type": "string",
-      "maxLength": 100,
-      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    }
-  },
-  {
-    "name": "version",
-    "in": "query",
-    "schema": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 2147483647
-    },
-    "description": "Omit for the latest published version."
-  }
-]
-```
+| Parameter | Location | Type | Required | Values and limits |
+| --- | --- | --- | --- | --- |
+| `X-Ultrametric-Interaction-Medium` | header | string | No | Client-reported interaction medium. Missing or unsupported values use unknown. `terminal`, `terminal_agent`, `desktop_agent`, `mobile_agent`, `web`, `unknown` |
+| `id` | path | string | Yes | Maximum characters: 100 |
+| `version` | query | integer | No | Omit for the latest published version. Minimum: 1; Maximum: 2147483647 |
 
 ## openProcess
 
@@ -144,39 +61,14 @@ POST /context/open
 
 Open or resume a process run.
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "processId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100,
-      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    },
-    "organizationId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100
-    },
-    "companyId": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "period": {
-      "default": "",
-      "type": "string",
-      "maxLength": 100
-    }
-  },
-  "required": [
-    "processId"
-  ],
-  "additionalProperties": false
-}
-```
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `processId` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `organizationId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `companyId` | string | No | Format: `uuid` |
+| `period` | string | No | Maximum characters: 100; Default: `""` |
 
 ## saveUpdate
 
@@ -186,346 +78,73 @@ POST /context/save
 
 Append progress and record revisions.
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "organizationId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100
-    },
-    "runId": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "updateKey": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "visibility": {
-      "default": "organization",
-      "type": "string",
-      "enum": [
-        "organization",
-        "protected"
-      ]
-    },
-    "text": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 6000
-    },
-    "source": {
-      "default": null,
-      "anyOf": [
-        {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 6000
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "observedAt": {
-      "type": "string",
-      "format": "date-time",
-      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-    },
-    "progress": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string",
-          "enum": [
-            "in_progress",
-            "waiting",
-            "completed",
-            "deleted"
-          ]
-        },
-        "detail": {
-          "default": null,
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 6000
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "required": [
-        "status"
-      ],
-      "additionalProperties": false
-    },
-    "records": {
-      "default": [],
-      "maxItems": 10,
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "type": "object",
-            "properties": {
-              "kind": {
-                "type": "string",
-                "const": "profile"
-              },
-              "visibility": {
-                "default": "organization",
-                "type": "string",
-                "enum": [
-                  "organization",
-                  "protected"
-                ]
-              },
-              "id": {
-                "type": "string",
-                "format": "uuid",
-                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-              },
-              "expectedRevision": {
-                "default": 0,
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 2147483647
-              },
-              "profile": {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema0"
-                }
-              }
-            },
-            "required": [
-              "kind",
-              "profile"
-            ],
-            "additionalProperties": false
-          },
-          {
-            "type": "object",
-            "properties": {
-              "kind": {
-                "type": "string",
-                "const": "document"
-              },
-              "visibility": {
-                "default": "organization",
-                "type": "string",
-                "enum": [
-                  "organization",
-                  "protected"
-                ]
-              },
-              "id": {
-                "type": "string",
-                "format": "uuid",
-                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-              },
-              "expectedRevision": {
-                "default": 0,
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 2147483647
-              },
-              "title": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              },
-              "purpose": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 100
-              },
-              "state": {
-                "default": "draft",
-                "type": "string",
-                "enum": [
-                  "draft",
-                  "current"
-                ]
-              },
-              "body": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 32000,
-                "pattern": "\\S"
-              },
-              "source": {
-                "default": null,
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 6000
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            },
-            "required": [
-              "kind",
-              "title",
-              "purpose",
-              "body"
-            ],
-            "additionalProperties": false
-          },
-          {
-            "type": "object",
-            "properties": {
-              "kind": {
-                "type": "string",
-                "const": "reference"
-              },
-              "visibility": {
-                "default": "protected",
-                "type": "string",
-                "const": "protected"
-              },
-              "id": {
-                "type": "string",
-                "format": "uuid",
-                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-              },
-              "expectedRevision": {
-                "default": 0,
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 2147483647
-              },
-              "subject": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              },
-              "property": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 100
-              },
-              "provider": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 100
-              },
-              "location": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 6000
-              },
-              "locationType": {
-                "type": "string",
-                "enum": [
-                  "reference",
-                  "hint"
-                ]
-              },
-              "source": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 6000
-              }
-            },
-            "required": [
-              "kind",
-              "subject",
-              "property",
-              "provider",
-              "location",
-              "locationType",
-              "source"
-            ],
-            "additionalProperties": false
-          },
-          {
-            "type": "object",
-            "properties": {
-              "kind": {
-                "type": "string",
-                "const": "delete"
-              },
-              "id": {
-                "type": "string",
-                "format": "uuid",
-                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-              },
-              "expectedRevision": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 2147483647
-              }
-            },
-            "required": [
-              "kind",
-              "id",
-              "expectedRevision"
-            ],
-            "additionalProperties": false
-          }
-        ]
-      }
-    }
-  },
-  "required": [
-    "organizationId",
-    "runId",
-    "updateKey",
-    "text"
-  ],
-  "additionalProperties": false,
-  "$defs": {
-    "__schema0": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "null"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/__schema0"
-          }
-        },
-        {
-          "type": "object",
-          "propertyNames": {
-            "type": "string"
-          },
-          "additionalProperties": {
-            "$ref": "#/$defs/__schema0"
-          }
-        }
-      ]
-    }
-  }
-}
-```
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `organizationId` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `runId` | string | Yes | Format: `uuid` |
+| `updateKey` | string | Yes | Format: `uuid` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `text` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+| `source` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+| `observedAt` | string | No | Format: `date-time` |
+| `progress` | object | No |  |
+| `records` | array | No | Maximum items: 10; Default: `[]` |
+
+### progress
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `status` | string | Yes | `in_progress`, `waiting`, `completed`, `deleted` |
+| `detail` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+
+### records: profile
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `profile` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `profile` | object | Yes |  |
+
+### records: document
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `document` |
+| `visibility` | string | No | `organization`, `protected`; Default: `organization` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `title` | string | Yes | Minimum characters: 1; Maximum characters: 200 |
+| `purpose` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `state` | string | No | `draft`, `current`; Default: `draft` |
+| `body` | string | Yes | Minimum characters: 1; Maximum characters: 32000 |
+| `source` | string or null | No | Minimum characters: 1; Maximum characters: 6000; Default: `null` |
+
+### records: reference
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `reference` |
+| `visibility` | string | No | Value: `protected`; Default: `protected` |
+| `id` | string | No | Format: `uuid` |
+| `expectedRevision` | integer | No | Minimum: 0; Maximum: 2147483647; Default: `0` |
+| `subject` | string | Yes | Minimum characters: 1; Maximum characters: 200 |
+| `property` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `provider` | string | Yes | Minimum characters: 1; Maximum characters: 100 |
+| `location` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+| `locationType` | string | Yes | `reference`, `hint` |
+| `source` | string | Yes | Minimum characters: 1; Maximum characters: 6000 |
+
+### records: delete
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `kind` | string | Yes | Value: `delete` |
+| `id` | string | Yes | Format: `uuid` |
+| `expectedRevision` | integer | Yes | Minimum: 1; Maximum: 2147483647 |
 
 ## getContext
 
@@ -535,71 +154,18 @@ POST /context/get
 
 Find or read authorized context.
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "collection": {
-      "type": "string",
-      "enum": [
-        "companies",
-        "runs",
-        "records"
-      ]
-    },
-    "organizationId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100
-    },
-    "companyId": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "runId": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "recordId": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "processId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100,
-      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    },
-    "query": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 200
-    },
-    "history": {
-      "default": false,
-      "type": "boolean"
-    },
-    "beforeRevision": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 2147483647
-    },
-    "after": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-    },
-    "limit": {
-      "default": 10,
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 25
-    }
-  },
-  "additionalProperties": false
-}
-```
+Send a JSON request body:
+
+| Field | Type | Required | Values and limits |
+| --- | --- | --- | --- |
+| `collection` | string | No | `companies`, `runs`, `records` |
+| `organizationId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `companyId` | string | No | Format: `uuid` |
+| `runId` | string | No | Format: `uuid` |
+| `recordId` | string | No | Format: `uuid` |
+| `processId` | string | No | Minimum characters: 1; Maximum characters: 100 |
+| `query` | string | No | Minimum characters: 1; Maximum characters: 200 |
+| `history` | boolean | No | Default: `false` |
+| `beforeRevision` | integer | No | Minimum: 1; Maximum: 2147483647 |
+| `after` | string | No | Format: `uuid` |
+| `limit` | integer | No | Minimum: 1; Maximum: 25; Default: `10` |

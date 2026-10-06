@@ -1,21 +1,48 @@
 ---
-title: "Troubleshoot access and saved work"
-description: "Resolve version, authentication, catalog, and context problems without changing scope."
+title: "Troubleshooting"
+description: "Fix sign-in, process access, skill setup, and saved-work problems."
 ---
 
-> Internal documentation draft. Recovery guidance follows the inspected CLI and API behavior.
+## The CLI command is missing
 
-| Symptom | Check | Next step |
-| --- | --- | --- |
-| `process open` or `context` is missing | `ultrametric --version` and `--help` | This reference targets 0.4.1; check the active Node environment and installed executable |
-| `AUTH_REQUIRED` or HTTP 401 | Selected environment and login | Complete login for that environment; local session presence is not proof of API acceptance |
-| Empty process list | MCP `status`, account, release access | Verify availability for the account; do not use a catalog copied from another user |
-| Process/version not found | ID and version from current catalog | Use the returned ID; `status` can inspect access to a supplied process ID |
-| Private context denied | Selected organization and required permissions | Resolve membership/scope; changing a request's organization ID cannot grant access |
-| Company missing from hosted results | Where it was saved | CLI local `companies` records are not automatically synchronized |
-| Update conflicts or uncertain save | Current record revision and prior update key | Read current state; retry uncertain writes only with the same key and exact input |
-| Skill setup reports a conflict | Preview with `init --dry-run` | Review the existing file before replacing it |
-| Process schema rejects a local adapter template | CLI and guide version | Update the client or choose a compatible published process version |
-| Optional MCP view does not render | Host capabilities and tool text | Use structured/text output; report the exact host/version for later verification |
+Run `ultrametric --version` and `ultrametric --help` in the environment your agent uses. These docs cover 0.4.1. If `process open` or `context` is missing, [update the CLI](/cli/install) and check that the agent uses the expected Node environment.
 
-For a report, record the client version, selected environment, operation, error code, and request ID if supplied. Remove bearer tokens, login codes, private payloads, and local paths that are not needed. A health check only establishes service liveness; it does not verify OAuth, catalog access, persistence, or successful process work.
+## Sign-in fails or returns AUTH_REQUIRED
+
+Check the selected environment and run `ultrametric auth status --json`. Start a new [CLI login](/cli/install) if needed. With MCP, reconnect through the host's OAuth flow.
+
+A saved CLI session can expire. If a request returns HTTP 401, sign in again. Keep production and staging sessions separate.
+
+## The process list is empty or an ID is unavailable
+
+Confirm the account in MCP `status` or CLI login status. The catalog is filtered by account access. Use an ID from the current catalog rather than one copied from another account.
+
+For a known ID, MCP `status` with `processId` reports `releaseAccess` and `available`. A selected version can also be unavailable; omit the version to request the latest available guide.
+
+## Company context is denied or missing
+
+Check the selected organization and your [context permissions](/mcp/authentication). Ask a workspace administrator to review access if needed.
+
+If the information was saved with CLI `companies` or `assessments`, look in local storage. Those files are not automatically synchronized to hosted context.
+
+## A save timed out or conflicted
+
+Retry an uncertain save with the exact same input and update key. Do not create another update key for that retry. After a conflict, read current state and use the current record revision when preparing a new change. See [save progress](/guides/save-progress).
+
+## A project skill conflicts or does not appear
+
+Run `ultrametric init --dry-run --json` to see which files would change. Review any differing file before using `--force` to replace it. Keep custom project guidance outside the generated skill.
+
+If the skill file exists but is unavailable to the agent, start a fresh session in the project. Check that the CLI is on the agent's executable path.
+
+## A local template does not match the process schema
+
+Update the CLI or choose a compatible published process version with `--process-version`. Use the returned guide's schema when preparing the result.
+
+## An MCP view does not display
+
+Ask the agent to use the tool's text or structured response. Optional views depend on the host's capabilities.
+
+## Report a problem
+
+Include the CLI or host version, environment, operation, error code, and request ID if one was returned. Remove access tokens, login codes, private payloads, and unnecessary local paths before sharing the report.

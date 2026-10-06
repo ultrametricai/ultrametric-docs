@@ -1,0 +1,9 @@
+AGENTS.md
+CONTRIBUTING.md
+README.md
+scripts/
+package.json
+contracts/generated.json
+contracts/cli-commands.json
+.work/
+.env*

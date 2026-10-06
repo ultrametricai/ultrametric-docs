@@ -20,15 +20,30 @@ try {
   assert.equal(run().data.name, 'ultrametric');
   const preview = run('init', '--path', project, '--dry-run');
   assert.equal(preview.data.files.length, 2);
+  for (const target of ['codex', 'claude']) {
+    assert.equal(run('init', '--agent', target, '--path', project, '--dry-run').data.files.length, 1);
+  }
   assert.deepEqual(await readdir(project), []);
   await assert.rejects(stat(dataDir), { code: 'ENOENT' });
-  for (const command of [['process', '--help'], ['context', 'get', '--help'], ['context', 'schema', '--help']]) {
+  for (const command of [['process', '--help'], ['process', 'open', '--help'], ['context', 'get', '--help'], ['context', 'save', '--help'], ['context', 'schema', '--help']]) {
     execFileSync(process.execPath, [bin, ...command], { stdio: 'pipe' });
   }
   const invalid = spawnSync(process.execPath, [bin, '--json', '--not-a-real-option'], { encoding: 'utf8' });
   assert.equal(invalid.status, 3);
   assert.equal(JSON.parse(invalid.stderr).error.code, 'USAGE');
   assert.equal(invalid.stdout, '');
+  const { openProcessInput, saveUpdateInput, getContextInput } = await sourceModule(apiRoot, 'src/context.ts');
+  const runId = '11111111-1111-4111-8111-111111111111';
+  const updateKey = '22222222-2222-4222-8222-222222222222';
+  const recordId = '33333333-3333-4333-8333-333333333333';
+  assert.equal(openProcessInput.parse({ processId: 'docs-read-only-fixture' }).period, '');
+  const update = { organizationId: 'docs-fixture', runId, updateKey, text: 'Reviewed a synthetic brief.', progress: { status: 'waiting', detail: 'Waiting for an answer.' } };
+  assert.equal(saveUpdateInput.parse(update).visibility, 'organization');
+  assert.equal(saveUpdateInput.safeParse({ ...update, updateKey: undefined }).success, false);
+  assert.equal(saveUpdateInput.safeParse({ ...update, progress: { status: 'done' } }).success, false);
+  assert.equal(getContextInput.parse({}).limit, 10);
+  assert.equal(getContextInput.parse({ runId }).runId, runId);
+  assert.equal(getContextInput.parse({ recordId, history: true, beforeRevision: 2 }).beforeRevision, 2);
   const fixture = await connectFixture(apiRoot);
   try {
     const tools = await fixture.client.listTools();
@@ -54,6 +69,6 @@ try {
     assert.deepEqual(guide, result.structuredContent);
     assert.equal(reads, 2);
   } finally { await fixture.client.close(); }
-  console.log('PASS: v0.4.1 version/help/discovery; init dry-run leaves project/data absent; JSON stderr/exit 3; real MCP SDK list/get with synthetic source; CLI transport list/get matches MCP.');
+  console.log('PASS: v0.4.1 version/help/discovery; both agent init dry-runs leave project/data absent; JSON stderr/exit 3; open/save/resume input schemas; real MCP SDK list/get with synthetic source; CLI transport list/get matches MCP.');
   console.log('No OAuth, private records, database, real process execution, writes, client UI, or external services tested.');
 } finally { await rm(temp, { recursive: true, force: true }); }

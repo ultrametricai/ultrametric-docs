@@ -1,19 +1,30 @@
 ---
-title: "Plugins and project skills"
-description: "Use the verified CLI skill targets and track the remaining distribution checks."
+title: "Project skills"
+description: "Give your agent Ultrametric instructions in a project."
 ---
 
-> Internal documentation draft. CLI skill-path generation was tested. Host loading and marketplace installation were not tested.
+The CLI includes a skill that explains how to find processes, reuse company context, and save progress. Install it in a project used by Codex or Claude Code.
 
-The published CLI includes an Ultrametric skill and can install it into a project for Codex or Claude Code. The skill explains how an agent should use the CLI, process guides, and company context. The CLI executable must be available to the agent.
+First [install the CLI](/cli/install). From the project directory:
 
-| Surface | Evidence | Guide |
+```sh
+ultrametric init --dry-run --json
+ultrametric init --json
+```
+
+The first command previews changes. The second writes the selected skill files.
+
+| Agent | File | Setup |
 | --- | --- | --- |
-| Codex project skill | Installer path and dry-run verified in CLI 0.4.1 | [Codex](/plugins/codex) |
-| Claude Code project skill | Installer path and dry-run verified in CLI 0.4.1 | [Claude Code](/plugins/claude-code) |
-| Remote MCP connection | API source and OAuth metadata verified | [MCP setup](/mcp/connect) |
-| Marketplace plugin | Manifest and release channel not verified | Pending |
+| Codex | `.agents/skills/ultrametric/SKILL.md` | [Codex project setup](/plugins/codex) |
+| Claude Code | `.claude/skills/ultrametric/SKILL.md` | [Claude Code project setup](/plugins/claude-code) |
 
-No product plugin manifest was found in the scoped CLI tag and API/public implementation source inspection. That search does not prove one is absent elsewhere. A marketplace page needs the actual manifest, distribution URL, version, permissions, and a client installation test before it can be published.
+Use `--agent codex` or `--agent claude` to install one target. Use `--path` to select an existing project directory explicitly.
 
-Installing project guidance does not configure MCP, sign in, or synchronize local records. Do not infer support for additional hosts from the existence of a Markdown skill.
+The files contain agent instructions. Your agent also needs the CLI on its executable path and a login for hosted operations. Set up an [MCP connection](/mcp/connect) separately if that is the interface you want to use.
+
+## Refresh or customize guidance
+
+Run `init --dry-run` after a CLI upgrade to inspect changes. Identical files remain unchanged. If a file differs, review it before using `--force` to replace the selected Ultrametric skill.
+
+Keep project-specific additions in your project's own instructions so they survive a skill update. You can commit the skill files to share the setup with your team.

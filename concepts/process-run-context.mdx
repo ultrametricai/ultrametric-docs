@@ -1,42 +1,44 @@
 ---
-title: "Processes, runs, and context"
-description: "Understand guide versions, saved progress, record revisions, and approval evidence."
+title: "Processes, runs, and saved context"
+description: "Understand what your agent retrieves and what it saves."
 ---
 
-> Internal documentation draft. These storage semantics are source-inspected; hosted writes were not exercised.
+A **process** is a guide for achieving an outcome. It contains instructions and a result schema that tells your agent how to structure the result.
 
-| Term | Meaning |
-| --- | --- |
-| Process | Instructions and a result schema for an outcome |
-| Run | A saved instance of work for an organization, company, process, and optional recurring period |
-| Context | Company profiles, documents, references, and reported progress available to authorized callers |
-| Revision | An append-only change to saved information |
-| Receipt | Confirmation that the service accepted a particular save |
+A **run** is saved work on a process for an organization and company. It records the process version and progress. A recurring task can have a separate run for each period.
 
-## Read before recording
+**Context** is information your agent can reuse: company profiles, documents, references, decisions, and progress updates.
 
-`get_process` retrieves a guide. `get_context` reads authorized records. `open_process` starts or resumes a run and can create the initial company when none exists. It returns the guide, existing context, organization ID, run ID, and next update key. These are separate operations with different effects.
+## How the operations fit together
 
-The CLI equivalents are `process get`, `context get`, and `process open`. CLI `companies` and `assessments` use local files. They do not automatically synchronize to hosted context.
+| Action | CLI | MCP |
+| --- | --- | --- |
+| Find processes | `process list` | `list_processes` |
+| Read a guide | `process get` | `get_process` |
+| Start or resume saved work | `process open` | `open_process` |
+| Save progress and records | `context save` | `save_update` |
+| Read saved work | `context get` | `get_context` |
 
-## Save progress with a receipt
+Opening a run returns its guide, current context, organization ID, run ID, and next update key. When an organization has no company yet, opening a process can create the initial company. When there are several companies, select one first.
 
-`save_update` and CLI `context save` record progress and optional profile, document, reference, or deletion changes. Use the organization ID, run ID, and next update key from the preceding result. Existing records require their current revision.
+## Revisions and receipts
 
-A successful save supplies a receipt with `saved`, `revision`, `savedAt`, `nextUpdateKey`, and record revisions. After an uncertain save, retry the exact input with the same update key. A new change uses the returned next key. Resolve conflicts by reading current state rather than generating another key and repeating an effect.
+Saved records have revisions. An update to an existing record must include its current revision so one session does not overwrite another session's changes.
 
-Current reads exclude deleted and superseded records. History requires an explicit record or run selector. Deletion appends a tombstone; it does not rewrite prior revisions.
+A successful save returns a receipt with `saved`, `revision`, `savedAt`, `nextUpdateKey`, and the affected record revisions. Your agent should retain that receipt before reporting that information was saved.
 
-## Keep review separate from effects
+If a save times out, retry the exact input with the same update key. Use the returned next key for a new change. Read current state before resolving a conflict. See [save progress](/guides/save-progress).
 
-The agent prepares results from available context and asks for necessary facts, consequential choices, or authority missing from the user's request. Reuse approval already provided for the same action and scope.
+Normal reads return current records. Deleted and superseded revisions are available only through an explicit history request. Deleting a record adds a tombstone while retaining its history.
 
-Profile review metadata records what the caller reports. The API does not verify that a human approved it. CLI local profile saving checks for review evidence and valid structure; it does not prove that evidence is true. A run marked `completed` records reported progress and does not prove an external action succeeded.
+## Review and external actions
 
-Before a filing, payment, account change, or other external effect, use the relevant tool's authorization rules and the user's scope. Preserve the external system's confirmation separately from a saved process update.
+Your agent may ask you to confirm facts, choose between options, or authorize an action. Saved review fields record what the caller reports. Keep the original approval or correction with the result when it matters.
 
-## Keep private context in its selected scope
+A saved update or a run marked `completed` records progress reported by your agent. For a filing, payment, or account change, ask the agent for the confirmation from the service that performed the action. Ultrametric's process and context operations retrieve guidance and store information; the agent's other tools carry out external work.
 
-Private operations require the selected organization, active membership, and context permissions. Read/write and protected-data permissions are distinct. Passing an organization ID checks the login's scope; it does not switch membership.
+## Hosted and local records
 
-Do not store secret values. Vault references use protected visibility. Mark other sensitive records appropriately; the API's pattern checks cannot identify every sensitive field. See [authentication and scope](/mcp/authentication).
+CLI `process open` and `context` commands use hosted records shared with MCP. CLI `companies` and `assessments` commands use local files. Local records are not uploaded automatically.
+
+Hosted records belong to the selected organization. Protected records require additional permissions. Keep secret values in an appropriate vault and store only a protected reference when needed. See [account and organization access](/mcp/authentication).

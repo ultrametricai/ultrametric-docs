@@ -1,32 +1,30 @@
 ---
-title: "HTTP process and context API"
-description: "Use the generated contract for authenticated process reads and scoped context operations."
+title: "HTTP API"
+description: "Read process guides and work with company context over HTTP."
 ---
 
-> Internal documentation draft. The seven documented path schemas match the observed production contract. Hosted authenticated calls were not tested.
+The production API origin is `https://api.ultrametric.ai`. CLI and MCP use this service for process guides and hosted company records.
 
-The production origin is `https://api.ultrametric.ai`. Read the [generated OpenAPI document](/contracts/openapi.json) or [operation reference](/api-reference/operations). The service also publishes its contract at [the public schema endpoint](https://api.ultrametric.ai/openapi.json).
+Use the [operation reference](/api-reference/operations) for request fields, or download the [OpenAPI contract](/contracts/openapi.json) for request and response schemas. The service also exposes [its current contract](https://api.ultrametric.ai/openapi.json).
 
-Success responses use a versioned envelope:
+## Authentication
 
-```json
-{ "schemaVersion": 1, "data": {} }
-```
+Operations require a bearer access token for the Ultrametric API. Use the appropriate CLI or MCP sign-in flow when using those interfaces. Tokens for a different application or environment are not interchangeable. Company-context operations also require organization membership and permissions; see [account access](/mcp/authentication).
 
-The empty `data` object above illustrates the envelope only. Each operation defines its actual data schema. Failures use `schemaVersion` and an `error` object with `code` and `message`.
+## Responses
 
-| Operation | Effect |
+Successful responses contain `schemaVersion: 1` and a `data` object. The fields inside `data` depend on the operation. Error responses contain `schemaVersion: 1` and an `error` object with `code` and `message`.
+
+| Operation | Result |
 | --- | --- |
-| `GET /status` | Read identity, environment, and optional process availability |
-| `GET /auth/workspace` | Resolve the selected or sole active workspace |
-| `GET /processes` | List available published guides |
-| `GET /processes/{id}` | Retrieve instructions and result schema |
-| `POST /context/get` | Read authorized context |
-| `POST /context/open` | Start or resume a stored run |
-| `POST /context/save` | Append progress and record revisions |
+| `GET /status` | Identity, environment, and optional process availability |
+| `GET /auth/workspace` | Selected or sole active workspace |
+| `GET /processes` | Available published guides |
+| `GET /processes/{id}` | Process instructions and result schema |
+| `POST /context/get` | Authorized saved context |
+| `POST /context/open` | Opened or resumed run |
+| `POST /context/save` | Save receipt and record revisions |
 
-HTTP method alone does not identify a write: `/context/get` uses POST for structured read selectors. Follow the operation's documented effect and authorization requirements.
+`/context/get` uses POST to accept structured read selectors. `/context/open` and `/context/save` write hosted state. Keep the same organization and update key when retrying an uncertain save.
 
-Use [authentication and scope](/mcp/authentication) for the bearer-token contracts. Tokens and private payloads should not be included in support reports or documentation examples. The API reference has no live request playground configured.
-
-`/mcp` uses the MCP protocol; its tool input schemas are in the [MCP reference](/mcp/tools).
+For agent tool calls, use the [MCP tools](/mcp/tools) at `/mcp`. Keep access tokens and private request bodies out of support reports.

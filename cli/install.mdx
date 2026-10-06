@@ -1,44 +1,57 @@
 ---
-title: "Install the CLI"
-description: "Use the verified npm package and inspect project setup before writing files."
+title: "Install and sign in"
+description: "Set up the CLI for a terminal-capable agent."
 ---
 
-> Internal documentation draft. npm metadata confirms 0.4.1. Installation and real sign-in were not performed for this draft.
-
-The CLI requires Node.js 22.12 or later. The package name and executable are both `ultrametric`.
+The CLI requires Node.js 22.12 or later. Your agent can install it from a terminal, or you can run:
 
 ```sh
 npm install -g ultrametric@0.4.1
 ultrametric --version
 ```
 
-The version pin matches this draft. Review later releases before changing it. With a Node version manager, install for the Node environment used by your terminal or agent.
+These instructions cover CLI 0.4.1. With a Node version manager, install the CLI in the Node environment your agent uses.
 
-## Preview project guidance
+## Sign in through your agent
 
-Run this from an existing project directory:
+Have your agent check the saved session:
+
+```sh
+ultrametric auth status --json
+```
+
+If you need to sign in, it can start login with:
+
+```sh
+ultrametric auth login --json
+```
+
+The result includes `verificationUriComplete`, `userCode`, `loginId`, `expiresAt`, and `retryAfter`. Open the returned verification link, confirm the code, and complete sign-in. Choose the account and workspace you want the agent to use.
+
+After browser approval, your agent completes the login using the returned ID:
+
+```sh
+ultrametric auth complete LOGIN_ID --json
+```
+
+Replace `LOGIN_ID` with `data.loginId` from the login response. Each completion request checks once. If the result is still pending, wait for `retryAfter` seconds before checking again. Start a new login if the code expires.
+
+If you are working directly in the terminal, `ultrametric auth login` opens the browser and waits for completion. With `--json`, the agent gets the link and controls completion without an interactive prompt.
+
+## Add project guidance
+
+From an existing project directory, preview the skill files:
 
 ```sh
 ultrametric init --dry-run --json
 ```
 
-The result lists the proposed Codex and Claude Code skill files and any conflicts. This preview does not write project files, settings, or logs. The preview behavior was tested in an empty temporary project.
-
-`init` without `--dry-run` installs those files. Choose `--agent codex` or `--agent claude` for one target. Review a differing skill before using `--force`, which replaces its contents. See [project skills](/plugins/overview).
-
-## Sign in when needed
+Install them after reviewing the preview:
 
 ```sh
-ultrametric auth status --json
-ultrametric auth login --json
+ultrametric init --json
 ```
 
-JSON login returns a verification URL, user code, and login ID without opening a browser. Show the verification information to the user. Once they approve sign-in, use the returned login ID:
+This installs project instructions for Codex and Claude Code. Use `--agent codex` or `--agent claude` for one target. Review a conflicting file before using `--force` to replace it. See [project skills](/plugins/overview).
 
-```sh
-ultrametric auth complete RETURNED_LOGIN_ID --json
-```
-
-Completion checks once; follow the returned `retryAfter` when pending. Do not keep retrying an expired login. Login saves a session, and browser setup can involve workspace creation or selection. Those are account actions outside the read-only draft verification.
-
-Continue with [the first-guide quickstart](/quickstart).
+Continue with [get started with your agent](/quickstart).

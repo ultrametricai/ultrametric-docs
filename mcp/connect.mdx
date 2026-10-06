@@ -1,30 +1,35 @@
 ---
-title: "Connect the product MCP"
-description: "Use the Ultrametric process endpoint from a host with remote MCP and OAuth support."
+title: "Connect MCP"
+description: "Add Ultrametric tools to an agent that supports remote MCP and OAuth."
 ---
 
-> Internal documentation draft. Public OAuth discovery was checked. A real client connection and login are still pending verification.
-
-Use this server URL in your host's remote MCP connection settings:
+In your agent host's remote MCP settings, add a connection with this server URL:
 
 ```text
 https://api.ultrametric.ai/mcp
 ```
 
-Complete the host's OAuth sign-in. Do not paste tokens into a conversation or commit them to configuration files. Client settings and OAuth behavior vary; use the host's current setup instructions.
+Complete the OAuth sign-in offered by the host. Choose the Ultrametric account and organization you want to use. Keep tokens and sign-in codes out of shared messages and repository files.
 
-After connection, ask the agent to:
+The host must support remote MCP and OAuth. Use its setup instructions to find the connection settings; the names and locations differ between applications.
 
-1. Call `status` and report the environment and selected organization.
-2. Call `list_processes` and select an available process relevant to the request.
-3. Call `get_process` using its returned ID and summarize the instructions.
+## Check the connection
 
-This sequence reads service data. It does not open a run or save updates. See [the quickstart](/quickstart) for output fields and [the generated tool reference](/mcp/tools) for exact inputs.
+Ask your agent:
 
-Use a separately named connection for staging at `https://api.ultrametric.dev/mcp`. Verify it independently. Do not switch an existing connection's environment as a recovery step or reuse production credentials in staging.
+```text
+Use Ultrametric to check my connection and selected organization.
+Then list the available processes and read one relevant to this project.
+```
 
-## Text and optional views
+The agent should call `status`, then `list_processes`, then `get_process` with a returned ID. Check the account and environment in the status result. A successful guide response includes its instructions and result schema.
 
-Process results contain useful text and structured data. The source attaches an optional conversation UI resource to the process catalog. That resource's presence does not establish rendering support in a desktop or mobile client. No rich-host support claim is made by this draft.
+If sign-in fails or the catalog is empty, see [troubleshooting](/troubleshooting). For the exact tool inputs, see [MCP tools](/mcp/tools).
 
-Ultrametric's product MCP provides process and context operations. Any future Mintlify documentation-search MCP would search documentation. Its URL and tools must be documented separately after setup.
+## Continue across sessions
+
+Use [saved context](/guides/resume-work) to find earlier company records and runs. CLI and MCP can access the same hosted records when signed in to the same organization. Their login sessions are separate.
+
+Tools return text and structured data that your agent can use. Some hosts can also show a process view. If a view is unavailable, ask the agent to summarize the returned data.
+
+For staging work, use a separately named connection to `https://api.ultrametric.dev/mcp` and sign in for that environment. Keep production and staging connections distinct.

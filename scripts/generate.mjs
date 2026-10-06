@@ -32,10 +32,46 @@ let mcp;
 try { mcp = await fixture.client.listTools(); } finally { await fixture.client.close(); }
 await output('contracts/mcp-tools.json', mcp);
 const frontmatter = (title, description) => `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\n---\n\n`;
-const banner = '> Internal documentation draft. Generated from pinned source; see the [verification scope](/index).\n\n';
 const cell = text => String(text ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ');
-let commands = frontmatter('CLI commands', 'Generated command names, arguments, and options for Ultrametric 0.4.1.') + banner;
-commands += 'Package: `ultrametric@0.4.1`. Command discovery is local and does not log in, read company records, or execute leaf commands. Descriptions state effects; this reference is not an instruction to run every command.\n\n';
+const code = value => `\`${cell(typeof value === 'string' ? value : JSON.stringify(value))}\``;
+function schemaType(schema) {
+  const alternatives = schema.anyOf ?? schema.oneOf;
+  if (alternatives) return [...new Set(alternatives.map(schemaType))].join(' or ');
+  if (schema.$ref) return 'JSON value';
+  return Array.isArray(schema.type) ? schema.type.join(' or ') : schema.type ?? 'JSON value';
+}
+function constraints(schema) {
+  const notes = [];
+  if (schema.description) notes.push(cell(schema.description));
+  if (schema.enum) notes.push(schema.enum.map(code).join(', '));
+  if ('const' in schema) notes.push(`Value: ${code(schema.const)}`);
+  if (schema.format) notes.push(`Format: ${code(schema.format)}`);
+  for (const [key, label] of [['minimum', 'Minimum'], ['maximum', 'Maximum'], ['minLength', 'Minimum characters'], ['maxLength', 'Maximum characters'], ['maxItems', 'Maximum items']]) {
+    if (key in schema) notes.push(`${label}: ${schema[key]}`);
+  }
+  for (const alternative of schema.anyOf ?? []) {
+    const details = constraints(alternative);
+    if (details) notes.push(details);
+  }
+  if ('default' in schema) notes.push(`Default: ${code(schema.default === '' ? '""' : schema.default)}`);
+  return notes.join('; ');
+}
+function inputTable(schema) {
+  let content = '| Field | Type | Required | Values and limits |\n| --- | --- | --- | --- |\n';
+  for (const [name, property] of Object.entries(schema.properties ?? {})) {
+    content += `| ${code(name)} | ${cell(schemaType(property))} | ${schema.required?.includes(name) ? 'Yes' : 'No'} | ${constraints(property)} |\n`;
+  }
+  content += '\n';
+  for (const [name, property] of Object.entries(schema.properties ?? {})) {
+    if (property.properties) content += `### ${name}\n\n${inputTable(property)}`;
+    for (const variant of property.items?.oneOf ?? []) {
+      content += `### ${name}: ${variant.properties?.kind?.const ?? 'item'}\n\n${inputTable(variant)}`;
+    }
+  }
+  return content;
+}
+let commands = frontmatter('CLI commands', 'Commands, arguments, and options for Ultrametric 0.4.1.');
+commands += 'Use `--json` for structured output and `--help` on any command for its usage. Start with [installation and sign-in](/cli/install), or follow the guide to [start a run and save progress](/guides/save-progress).\n\n';
 function walk(command, parent = '') {
   const name = `${parent} ${command.name}`.trim();
   commands += `## ${name}\n\n${command.description}\n\n\`\`\`text\n${name} ${command.usage}\n\`\`\`\n\n`;
@@ -48,19 +84,31 @@ function walk(command, parent = '') {
 }
 walk(cli.data);
 await writeFile('cli/commands.mdx', commands.trimEnd() + '\n');
-let tools = frontmatter('MCP tools', 'Generated tool inputs and effects from the Ultrametric API source.') + banner;
-tools += 'These tools were discovered through the actual server handler with a synthetic in-memory fixture. The test did not authenticate a hosted client. Context tools appear when the server has context operations configured.\n\n';
+let tools = frontmatter('MCP tools', 'Find processes, read instructions, and keep progress through your agent.');
+tools += 'After [connecting your agent](/mcp/connect), use `status` to check the account and `list_processes` to find work. Use `get_process` to read instructions, or `open_process` to start a run that can keep progress.\n\n';
+tools += 'The [complete MCP schemas](/contracts/mcp-tools.json) include exact input constraints and output formats. For saving and resuming, follow [save progress](/guides/save-progress) and [resume work](/guides/resume-work).\n\n';
+tools += '| Tool | Effect |\n| --- | --- |\n';
+for (const tool of mcp.tools) tools += `| ${code(tool.name)} | ${tool.annotations?.readOnlyHint ? 'Read only' : 'Writes saved context'} |\n`;
+tools += '\n';
 for (const tool of mcp.tools) {
-  tools += `## ${tool.name}\n\n${tool.description}\n\nEffect annotation: **${tool.annotations?.readOnlyHint ? 'read-only' : 'writes context'}**.\n\n\`\`\`json\n${JSON.stringify(tool.inputSchema, null, 2)}\n\`\`\`\n\n`;
+  tools += `## ${tool.name}\n\n${tool.description}\n\n${inputTable(tool.inputSchema)}`;
 }
 await writeFile('mcp/tools.mdx', tools.trimEnd() + '\n');
-let operations = frontmatter('HTTP operations', 'Generated request contracts for process and context operations.') + banner;
-operations += 'Source: the owning API’s `openApi()` exporter. The downloadable [OpenAPI contract](/contracts/openapi.json) retains success and error response schemas. Internal status and snapshot-preview endpoints are outside this product reference.\n\n';
+let operations = frontmatter('HTTP operations', 'Request fields for process discovery, runs, and saved context.');
+operations += 'Send requests to `https://api.ultrametric.ai` with an OAuth bearer token. See [authentication and responses](/api-reference/overview) before calling an operation. The [OpenAPI contract](/contracts/openapi.json) includes exact input constraints and success and error response schemas.\n\n';
 for (const [path, methods] of Object.entries(spec.paths)) {
   for (const [method, operation] of Object.entries(methods)) {
     operations += `## ${operation.operationId}\n\n\`\`\`http\n${method.toUpperCase()} ${path}\n\`\`\`\n\n${operation.summary}\n\n`;
-    const input = operation.requestBody?.content?.['application/json']?.schema ?? operation.parameters;
-    if (input) operations += `\`\`\`json\n${JSON.stringify(input, null, 2)}\n\`\`\`\n\n`;
+    if (operation.parameters?.length) {
+      operations += '| Parameter | Location | Type | Required | Values and limits |\n| --- | --- | --- | --- | --- |\n';
+      for (const parameter of operation.parameters) {
+        const details = [cell(parameter.description ?? ''), constraints(parameter.schema)].filter(Boolean).join(' ');
+        operations += `| ${code(parameter.name)} | ${parameter.in} | ${cell(schemaType(parameter.schema))} | ${parameter.required ? 'Yes' : 'No'} | ${details} |\n`;
+      }
+      operations += '\n';
+    }
+    const input = operation.requestBody?.content?.['application/json']?.schema;
+    if (input) operations += `Send a JSON request body:\n\n${inputTable(input)}`;
   }
 }
 await writeFile('api-reference/operations.mdx', operations.trimEnd() + '\n');

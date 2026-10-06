@@ -1,22 +1,14 @@
 # ultrametric-docs
 Documentation for Ultrametric CLI, MCP, and more
 
-## Documentation draft
+Use Ultrametric from your agent to find process guidance, save company context, and continue work across sessions.
 
-This repository contains 18 Mintlify-ready MDX pages for CLI, MCP, process guidance, and company context. Start with `index.mdx` and `quickstart.mdx`. The root `docs.json` defines navigation and styling.
+- [Get started](quickstart.mdx)
+- [Install and sign in to the CLI](cli/install.mdx)
+- [Connect MCP](mcp/connect.mdx)
+- [Save process progress](guides/save-progress.mdx)
+- [Troubleshooting](troubleshooting.mdx)
 
-The reference targets the published `ultrametric@0.4.1` CLI. HTTP schemas are generated from the owning API and compared with its public contract. MCP tools are discovered through the actual server handler with synthetic data. The docs do not maintain a separate process catalog.
+The site uses Mintlify. Its root `docs.json` defines navigation and appearance. Pages use Markdown within MDX.
 
-## Check locally
-
-```sh
-npm run check
-```
-
-This dependency-free command runs offline. It checks navigation, local links, draft labels, generated-content hashes, and selected contract invariants. See [CONTRIBUTING.md](CONTRIBUTING.md) for regeneration and synthetic example verification. [Provenance](contracts/provenance.json) records public release metadata and the scope of verification.
-
-The Mintlify configuration passes its official JSON Schema. Mintlify rendering, real OAuth/client use, and marketplace plugin installation remain unverified. No software installation is required for the offline check.
-
-## Publication
-
-The site is a draft. Review its markers and remaining validation before publication. No Mintlify account connection, domain binding, or deployment is configured here. Publication and installation require separate authorization.
+For documentation changes, see [CONTRIBUTING.md](CONTRIBUTING.md). Run `npm run check` to check navigation, links, generated references, and public-page content rules.
