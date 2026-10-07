@@ -5,7 +5,6 @@ import { createHash } from 'node:crypto';
 
 const root = process.cwd();
 const config = JSON.parse(await readFile('docs.json', 'utf8'));
-const spec = JSON.parse(await readFile('contracts/openapi.json', 'utf8'));
 const mcp = JSON.parse(await readFile('contracts/mcp-tools.json', 'utf8'));
 const cli = JSON.parse(await readFile('contracts/cli-commands.json', 'utf8'));
 assert.equal(config.$schema, 'https://mintlify.com/docs.json');
@@ -22,7 +21,7 @@ const ignored = path => ignorePatterns.some(pattern => pattern.endsWith('/') ? p
 for (const path of ['AGENTS.md', 'CONTRIBUTING.md', 'README.md', 'scripts/check.mjs', 'package.json', 'contracts/generated.json', 'contracts/cli-commands.json']) {
   assert.ok(ignored(path), `Maintenance file must be excluded from the site: ${path}`);
 }
-for (const path of ['contracts/openapi.json', 'contracts/mcp-tools.json']) assert.ok(!ignored(path), `Public schema must be available: ${path}`);
+for (const path of ['contracts/mcp-tools.json']) assert.ok(!ignored(path), `Public schema must be available: ${path}`);
 async function filesBelow(dir = '.') {
   const files = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -34,9 +33,22 @@ async function filesBelow(dir = '.') {
   return files;
 }
 const files = await filesBelow();
+assert.ok(ignored('plugins/overview.mdx'), 'Retired skill pages must be excluded from the site.');
+assert.ok(!files.some(path => path.startsWith('plugins/') && path.endsWith('.mdx')), 'Keep skill setup in the CLI install page.');
+assert.ok(!JSON.stringify(config.navigation).includes('plugins/'), 'Keep standalone skill pages out of navigation.');
+for (const path of ['api-reference/overview.mdx', 'api-reference/operations.mdx', 'contracts/openapi.json']) {
+  assert.ok(!files.includes(path), `Remove retired HTTP reference output: ${path}`);
+  assert.ok(ignored(path), `Retired HTTP reference must be excluded: ${path}`);
+}
+assert.ok(!JSON.stringify(config.navigation).includes('api-reference'), 'Keep HTTP references out of navigation.');
+assert.ok(!config.api?.openapi, 'Do not generate public HTTP endpoints from an OpenAPI import.');
+for (const path of files.filter(path => !ignored(path) && /\.(mdx|json)$/.test(path) && path !== 'docs.json')) {
+  const content = await readFile(path, 'utf8');
+  assert.ok(!/\bopenapi\b|\/api-reference\/|```http\b|https:\/\/api\.ultrametric\.(?:ai|dev)\/(?:processes|context|auth\/workspace|status)\b|(?:curl|fetch)\b[^\n]*https:\/\/api\.ultrametric\./i.test(content), `Keep public docs focused on consumer interfaces: ${path}`);
+}
 assert.deepEqual(files.filter(path => path.endsWith('.mdx')).sort(), pages.map(page => `${page}.mdx`).sort(), 'Every MDX page must be in navigation.');
 const editorialNotes = /internal documentation draft|internal draft|source[- ]inspected|verification scope|release evidence|not yet (?:tested|verified)|untested client|synthetic (?:in-memory )?fixture|pending validation|documentation scaffold/i;
-for (const path of [...pages.map(page => `${page}.mdx`), 'README.md', 'docs.json', 'contracts/openapi.json', 'contracts/mcp-tools.json']) {
+for (const path of [...pages.map(page => `${page}.mdx`), 'README.md', 'docs.json', 'contracts/mcp-tools.json']) {
   assert.ok(!editorialNotes.test(await readFile(path, 'utf8')), `Move internal review commentary out of ${path}`);
 }
 async function exists(path) { try { return (await stat(path)).isFile(); } catch { return false; } }
@@ -58,8 +70,6 @@ for (const path of [...pages.map(page => `${page}.mdx`), 'README.md', 'CONTRIBUT
     }
   }
 }
-assert.equal(spec.openapi, '3.1.0');
-assert.ok(Object.keys(spec.paths).every(path => !path.startsWith('/internal') && !path.startsWith('/views')));
 assert.equal(cli.schemaVersion, 1);
 assert.equal(cli.data.name, 'ultrametric');
 const byName = new Map(mcp.tools.map(tool => [tool.name, tool]));
@@ -67,8 +77,6 @@ assert.equal(byName.size, 6);
 for (const name of ['status', 'list_processes', 'get_process', 'get_context']) assert.equal(byName.get(name)?.annotations.readOnlyHint, true);
 for (const name of ['open_process', 'save_update']) assert.equal(byName.get(name)?.annotations.readOnlyHint, false);
 for (const name of ['list_processes', 'get_process']) assert.equal(byName.get(name)?.inputSchema.type, 'object');
-const get = spec.paths['/processes/{id}'].get;
-assert.equal(get.operationId, 'getProcess');
 assert.ok(cli.data.commands.find(c => c.name === 'process').commands.some(c => c.name === 'get'));
 assert.ok(cli.data.commands.find(c => c.name === 'context').commands.some(c => c.name === 'get'));
 for (const path of files) {

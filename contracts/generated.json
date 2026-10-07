@@ -2,10 +2,8 @@
   "schemaVersion": 1,
   "files": {
     "contracts/cli-commands.json": "d57bdadc11cfc0a6001febeadb8da67f77d3209d029175628ba9e1488d100fbb",
-    "contracts/openapi.json": "58e1c9ec9f6ada0c7d16f9b0b2592ad5d1de65c96d0f647c73a3ad8a74ac7cff",
     "contracts/mcp-tools.json": "ac4c0ed6a0d00807447cb0ef772d3ec7d88a87c0d22eb09171fe230c1170a6ee",
     "cli/commands.mdx": "cea345c0afaa58589164c136559318582a3a938b8cc1c28691052f3c86a83d17",
-    "mcp/tools.mdx": "a6d36b29aec2beb90a5958e84c35486949ec29a72dcbcdf8daa1e1758b2b074c",
-    "api-reference/operations.mdx": "2598e46da4960f3554e5d7bd0319bea46776af6e4e72e826dd74194e7db4b072"
+    "mcp/tools.mdx": "a6d36b29aec2beb90a5958e84c35486949ec29a72dcbcdf8daa1e1758b2b074c"
   }
 }
