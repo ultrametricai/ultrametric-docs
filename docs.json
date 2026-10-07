@@ -69,5 +69,10 @@
       "discord": "https://discord.gg/3aHky836qP",
       "github": "https://github.com/ultrametricai/ultrametric"
     }
-  }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.png"
 }

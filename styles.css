@@ -1,0 +1,11 @@
+/* Match the wordmark height used by the Ultrametric website header. */
+img.nav-logo {
+  height: 0.75rem;
+  width: auto;
+}
+
+@media (min-width: 40rem) {
+  img.nav-logo {
+    height: 0.875rem;
+  }
+}
