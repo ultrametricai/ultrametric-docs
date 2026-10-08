@@ -14,7 +14,7 @@ The check covers navigation, local links, generated-file hashes, and reader-faci
 
 ## Maintain references
 
-The CLI, MCP, and HTTP references are generated from their owning implementations. Update the generator as well as the source metadata when changing a reference. Process guides remain in the service; do not copy the catalog here.
+The CLI and MCP references are generated from their owning implementations. Update the generator as well as the source metadata when changing a reference. Process guides remain in the service; do not copy the catalog here.
 
 Maintainers with source access can run:
 
@@ -25,7 +25,7 @@ npm run verify:examples -- /path/to/prepared-cli /path/to/prepared-api
 
 Keep the reviewed source-pin file and prepared source copies outside this repository. The generator checks source and build fingerprints before exporting contracts. The example verifier uses synthetic data and blocks external requests and context writes.
 
-`contracts/generated.json` records the generated-file hashes. Full HTTP and MCP schemas remain available for users who need exact input and output formats.
+`contracts/generated.json` records the generated-file hashes. MCP tool schemas remain available for exact tool inputs and outputs. Document consumer access through MCP and CLI. Keep agent skill setup in the CLI install page. Do not generate HTTP API pages or OpenAPI downloads.
 
 ## Site content
 

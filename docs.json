@@ -42,21 +42,6 @@
         ]
       },
       {
-        "group": "Agent setup",
-        "pages": [
-          "plugins/overview",
-          "plugins/codex",
-          "plugins/claude-code"
-        ]
-      },
-      {
-        "group": "HTTP API",
-        "pages": [
-          "api-reference/overview",
-          "api-reference/operations"
-        ]
-      },
-      {
         "group": "Help",
         "pages": [
           "troubleshooting"
@@ -74,5 +59,31 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
-  "favicon": "/favicon.png"
+  "favicon": "/favicon.png",
+  "redirects": [
+    {
+      "source": "/api-reference/overview",
+      "destination": "/"
+    },
+    {
+      "source": "/api-reference/operations",
+      "destination": "/"
+    },
+    {
+      "source": "/plugins/overview",
+      "destination": "/cli/install#agent-skills"
+    },
+    {
+      "source": "/plugins/codex",
+      "destination": "/cli/install#agent-skills"
+    },
+    {
+      "source": "/plugins/claude-code",
+      "destination": "/cli/install#agent-skills"
+    },
+    {
+      "source": "/plugins/use-process",
+      "destination": "/cli/install#agent-skills"
+    }
+  ]
 }

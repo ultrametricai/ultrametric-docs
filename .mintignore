@@ -7,3 +7,6 @@ contracts/generated.json
 contracts/cli-commands.json
 .work/
 .env*
+api-reference/
+contracts/openapi.json
+plugins/
