@@ -43,13 +43,13 @@ If you are working directly in the terminal, `ultrametric auth login` opens the 
 The CLI can add Ultrametric instructions to a project for Codex and Claude Code. From the project directory, preview the files, then install them:
 
 ```sh
-ultrametric init --dry-run --json
-ultrametric init --json
+ultrametric init --project --dry-run --json
+ultrametric init --project --json
 ```
 
 Use `--agent codex` or `--agent claude` for one client, and `--path` to choose another existing project directory. Review conflicting files before using `--force` to replace them.
 
-After updating the CLI, run `init` again to refresh the project's installed instructions.
+After updating the CLI, repeat the preview and install steps to refresh the project's installed instructions.
 
 Start a fresh agent session in the project to load the installed instructions. The agent needs terminal access to the CLI and the sign-in above for hosted operations.
 
