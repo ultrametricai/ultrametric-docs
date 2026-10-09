@@ -6,11 +6,11 @@ description: "Set up the CLI for a terminal-capable agent."
 The CLI requires Node.js 22.12 or later. Your agent can install it from a terminal, or you can run:
 
 ```sh
-npm install -g ultrametric@0.4.1
+npm install -g ultrametric@latest
 ultrametric --version
 ```
 
-These instructions cover CLI 0.4.1. With a Node version manager, install the CLI in the Node environment your agent uses.
+The same command updates an existing installation. With a Node version manager, install the CLI in the Node environment your agent uses.
 
 ## Sign in through your agent
 
@@ -40,15 +40,17 @@ If you are working directly in the terminal, `ultrametric auth login` opens the 
 
 ## Agent skills
 
-CLI 0.4.1 can add Ultrametric instructions to a project for Codex and Claude Code. From the project directory, preview the files, then install them:
+The CLI can add Ultrametric instructions to a project for Codex and Claude Code. From the project directory, preview the files, then install them:
 
 ```sh
-ultrametric init --dry-run --json
-ultrametric init --json
+ultrametric init --project --dry-run --json
+ultrametric init --project --json
 ```
 
 Use `--agent codex` or `--agent claude` for one client, and `--path` to choose another existing project directory. Review conflicting files before using `--force` to replace them.
 
-Start a fresh agent session in the project and ask it to use Ultrametric. The agent needs terminal access to the CLI and the sign-in above for hosted operations.
+After updating the CLI, repeat the preview and install steps to refresh the project's installed instructions.
+
+Start a fresh agent session in the project to load the installed instructions. The agent needs terminal access to the CLI and the sign-in above for hosted operations.
 
 Continue with [get started with your agent](/quickstart).
