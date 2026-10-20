@@ -40,17 +40,24 @@ If you are working directly in the terminal, `ultrametric auth login` opens the 
 
 ## Agent skills
 
-The CLI can add Ultrametric instructions to a project for Codex and Claude Code. From the project directory, preview the files, then install them:
+By default, `ultrametric init` installs instructions for the current user in `~/.agents/skills/ultrametric/SKILL.md` for Codex CLI and `~/.claude/skills/ultrametric/SKILL.md` for Claude Code:
+
+```sh
+ultrametric init --dry-run --json
+ultrametric init --json
+```
+
+To share instructions with a project, use `--project`. From the project directory, preview the files, then install them:
 
 ```sh
 ultrametric init --project --dry-run --json
 ultrametric init --project --json
 ```
 
-Use `--agent codex` or `--agent claude` for one client, and `--path` to choose another existing project directory. Review conflicting files before using `--force` to replace them.
+Use `--agent codex` or `--agent claude` for one client. `--path` selects another existing project directory and implies project scope. Review conflicting files before using `--force` to replace them.
 
-After updating the CLI, repeat the preview and install steps to refresh the project's installed instructions.
+After updating the CLI, repeat the preview and install steps with the same scope to refresh the installed instructions.
 
-Start a fresh agent session in the project to load the installed instructions. The agent needs terminal access to the CLI and the sign-in above for hosted operations.
+Start a fresh terminal agent session to load the installed instructions. For project instructions, start the session in that project. The agent needs terminal access to the CLI and the sign-in above for hosted operations. To connect a host through MCP, follow [Connect MCP](/mcp/connect).
 
 Continue with [get started with your agent](/quickstart).

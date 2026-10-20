@@ -14,6 +14,8 @@ assert.match(install, /ultrametric init --project --dry-run --json\nultrametric 
 assert.equal(config.$schema, 'https://mintlify.com/docs.json');
 assert.equal(config.theme, 'mint');
 const generated = JSON.parse(await readFile('contracts/generated.json', 'utf8'));
+assert.match(generated.cliVersion, /^\d+\.\d+\.\d+$/);
+assert.ok((await readFile('cli/commands.mdx', 'utf8')).includes(`Commands, arguments, and options for Ultrametric ${generated.cliVersion}.`), 'Reference version must match the generated CLI release.');
 for (const [path, expected] of Object.entries(generated.files)) {
   assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'), expected, `Regenerate edited reference: ${path}`);
 }

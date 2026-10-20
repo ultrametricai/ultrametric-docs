@@ -4,26 +4,41 @@ import { resolve } from 'node:path';
 import { connectFixture } from './fixture.mjs';
 import { sourceFingerprint, fileHash } from './source-integrity.mjs';
 
-const [cliRoot, apiRoot, pinFile] = process.argv.slice(2);
-if (!cliRoot || !apiRoot || !pinFile) throw new Error('Usage: npm run generate -- /path/to/prepared-cli /path/to/prepared-api /path/to/private-source-pins.json');
-const pins = JSON.parse(await readFile(pinFile, 'utf8'));
+const args = process.argv.slice(2);
+const cliOnly = args[0] === '--cli-only';
+const [cliRoot, apiRoot, pinFile] = cliOnly ? args.slice(1) : args;
+if (!cliRoot || (!cliOnly && (!apiRoot || !pinFile))) throw new Error('Usage: npm run generate -- --cli-only /path/to/unpacked-npm-release OR /path/to/prepared-cli /path/to/prepared-api /path/to/private-source-pins.json');
 const { createHash } = await import('node:crypto');
-for (const [root, pin, extra] of [[cliRoot, pins.cli, ['skills/ultrametric/SKILL.md', 'scripts/build.mjs', 'tsconfig.json']], [apiRoot, pins.api, []]]) {
-  if (await sourceFingerprint(root, extra) !== pin.sourceFingerprint) {
-    throw new Error('Source drift. Review the owning source and update provenance before generation.');
+const previousGenerated = cliOnly ? JSON.parse(await readFile('contracts/generated.json', 'utf8')) : undefined;
+if (cliOnly) {
+  for (const path of ['contracts/mcp-tools.json', 'mcp/tools.mdx']) {
+    if (await fileHash(path) !== previousGenerated.files[path]) throw new Error(`MCP reference drift; review separately before CLI-only generation: ${path}`);
   }
 }
-for (const [path, expected] of Object.entries(pins.cli.buildArtifacts)) {
-  if (await fileHash(resolve(cliRoot, 'dist', path)) !== expected) throw new Error('CLI build does not match the recorded source export.');
+if (!cliOnly) {
+  const pins = JSON.parse(await readFile(pinFile, 'utf8'));
+  for (const [root, pin, extra] of [[cliRoot, pins.cli, ['skills/ultrametric/SKILL.md', 'scripts/build.mjs', 'tsconfig.json']], [apiRoot, pins.api, []]]) {
+    if (await sourceFingerprint(root, extra) !== pin.sourceFingerprint) {
+      throw new Error('Source drift. Review the owning source and update provenance before generation.');
+    }
+  }
+  for (const [path, expected] of Object.entries(pins.cli.buildArtifacts)) {
+    if (await fileHash(resolve(cliRoot, 'dist', path)) !== expected) throw new Error('CLI build does not match the recorded source export.');
+  }
+  if (await fileHash(resolve(apiRoot, 'dist/ui-resource.ts')) !== pins.mcp.uiFixtureSha256) throw new Error('MCP fixture asset changed; verify the supporting build.');
 }
-if (await fileHash(resolve(apiRoot, 'dist/ui-resource.ts')) !== pins.mcp.uiFixtureSha256) throw new Error('MCP fixture asset changed; verify the supporting build.');
 const output = async (path, value) => writeFile(path, JSON.stringify(value, null, 2) + '\n');
+const cliPackage = JSON.parse(await readFile(resolve(cliRoot, 'package.json'), 'utf8'));
+const cliVersion = execFileSync(process.execPath, [resolve(cliRoot, 'dist/bin.js'), '--version'], { encoding: 'utf8' }).trim();
+if (cliPackage.name !== 'ultrametric' || cliVersion !== cliPackage.version) throw new Error('CLI package and executable versions must match.');
 const cli = JSON.parse(execFileSync(process.execPath, [resolve(cliRoot, 'dist/bin.js'), '--json'], { encoding: 'utf8' }));
 await output('contracts/cli-commands.json', cli);
-const fixture = await connectFixture(apiRoot);
 let mcp;
-try { mcp = await fixture.client.listTools(); } finally { await fixture.client.close(); }
-await output('contracts/mcp-tools.json', mcp);
+if (!cliOnly) {
+  const fixture = await connectFixture(apiRoot);
+  try { mcp = await fixture.client.listTools(); } finally { await fixture.client.close(); }
+  await output('contracts/mcp-tools.json', mcp);
+}
 const frontmatter = (title, description) => `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\n---\n\n`;
 const cell = text => String(text ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ');
 const code = value => `\`${cell(typeof value === 'string' ? value : JSON.stringify(value))}\``;
@@ -63,7 +78,7 @@ function inputTable(schema) {
   }
   return content;
 }
-let commands = frontmatter('CLI commands', 'Commands, arguments, and options for Ultrametric 0.4.1.');
+let commands = frontmatter('CLI commands', `Commands, arguments, and options for Ultrametric ${cliVersion}.`);
 commands += 'Use `--json` for structured output and `--help` on any command for its usage. Start with [installation and sign-in](/cli/install), or follow the guide to [start a run and save progress](/guides/save-progress).\n\n';
 function walk(command, parent = '') {
   const name = `${parent} ${command.name}`.trim();
@@ -77,19 +92,22 @@ function walk(command, parent = '') {
 }
 walk(cli.data);
 await writeFile('cli/commands.mdx', commands.trimEnd() + '\n');
-let tools = frontmatter('MCP tools', 'Find processes, read instructions, and keep progress through your agent.');
-tools += 'After [connecting your agent](/mcp/connect), use `status` to check the account and `list_processes` to find work. Use `get_process` to read instructions, or `open_process` to start a run that can keep progress.\n\n';
-tools += 'The [complete MCP schemas](/contracts/mcp-tools.json) include exact input constraints and output formats. For saving and resuming, follow [save progress](/guides/save-progress) and [resume work](/guides/resume-work).\n\n';
-tools += '| Tool | Effect |\n| --- | --- |\n';
-for (const tool of mcp.tools) tools += `| ${code(tool.name)} | ${tool.annotations?.readOnlyHint ? 'Read only' : 'Writes saved context'} |\n`;
-tools += '\n';
-for (const tool of mcp.tools) {
-  tools += `## ${tool.name}\n\n${tool.description}\n\n${inputTable(tool.inputSchema)}`;
+if (!cliOnly) {
+  let tools = frontmatter('MCP tools', 'Find processes, read instructions, and keep progress through your agent.');
+  tools += 'After [connecting your agent](/mcp/connect), use `status` to check the account and `list_processes` to find work. Use `get_process` to read instructions, or `open_process` to start a run that can keep progress.\n\n';
+  tools += 'The [complete MCP schemas](/contracts/mcp-tools.json) include exact input constraints and output formats. For saving and resuming, follow [save progress](/guides/save-progress) and [resume work](/guides/resume-work).\n\n';
+  tools += '| Tool | Effect |\n| --- | --- |\n';
+  for (const tool of mcp.tools) tools += `| ${code(tool.name)} | ${tool.annotations?.readOnlyHint ? 'Read only' : 'Writes saved context'} |\n`;
+  tools += '\n';
+  for (const tool of mcp.tools) {
+    tools += `## ${tool.name}\n\n${tool.description}\n\n${inputTable(tool.inputSchema)}`;
+  }
+  await writeFile('mcp/tools.mdx', tools.trimEnd() + '\n');
 }
-await writeFile('mcp/tools.mdx', tools.trimEnd() + '\n');
-const generated = {};
-for (const path of ['contracts/cli-commands.json', 'contracts/mcp-tools.json', 'cli/commands.mdx', 'mcp/tools.mdx']) {
+const generated = { ...previousGenerated?.files };
+const generatedPaths = cliOnly ? ['contracts/cli-commands.json', 'cli/commands.mdx'] : ['contracts/cli-commands.json', 'contracts/mcp-tools.json', 'cli/commands.mdx', 'mcp/tools.mdx'];
+for (const path of generatedPaths) {
   generated[path] = createHash('sha256').update(await readFile(path)).digest('hex');
 }
-await output('contracts/generated.json', { schemaVersion: 1, files: generated });
-console.log(`Generated ${mcp.tools.length} MCP tools and the CLI command tree.`);
+await output('contracts/generated.json', { schemaVersion: 1, cliVersion, files: generated });
+console.log(cliOnly ? `Generated the CLI ${cliVersion} command tree; retained MCP references.` : `Generated ${mcp.tools.length} MCP tools and the CLI ${cliVersion} command tree.`);

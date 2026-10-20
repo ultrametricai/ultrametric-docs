@@ -1,6 +1,6 @@
 ---
 title: "CLI commands"
-description: "Commands, arguments, and options for Ultrametric 0.4.1."
+description: "Commands, arguments, and options for Ultrametric 0.5.1."
 ---
 
 Use `--json` for structured output and `--help` on any command for its usage. Start with [installation and sign-in](/cli/install), or follow the guide to [start a run and save progress](/guides/save-progress).
@@ -63,7 +63,7 @@ ultrametric auth logout [options]
 
 ## ultrametric init
 
-Install the Ultrametric documentation skill in a project for Codex and Claude Code.
+Install Ultrametric skills globally for the current user. No project is required.
 
 ```text
 ultrametric init [options]
@@ -71,9 +71,10 @@ ultrametric init [options]
 
 | Option | Meaning | Choices | Required |
 | --- | --- | --- | --- |
-| `--path <directory>` | Existing project directory (defaults to the current directory). |  | No |
+| `--project` | Install in the current project instead of the user home. |  | No |
+| `--path <directory>` | Install in this existing project directory instead of the user home. |  | No |
 | `--agent <agent>` | Agent skill location to install. | all, codex, claude | No |
-| `--dry-run` | Preview changes without writing project files, settings, or logs. |  | No |
+| `--dry-run` | Preview changes without writing skills, settings, or logs. |  | No |
 | `--force` | Replace an existing Ultrametric SKILL.md that differs from the bundled version. |  | No |
 
 ## ultrametric process

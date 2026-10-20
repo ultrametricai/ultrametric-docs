@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
+  "cliVersion": "0.5.1",
   "files": {
-    "contracts/cli-commands.json": "d57bdadc11cfc0a6001febeadb8da67f77d3209d029175628ba9e1488d100fbb",
+    "contracts/cli-commands.json": "bb82ff49111be40286ba852e60b8d37f35920ff4d5076f00e22ab765ae6adf1e",
     "contracts/mcp-tools.json": "ac4c0ed6a0d00807447cb0ef772d3ec7d88a87c0d22eb09171fe230c1170a6ee",
-    "cli/commands.mdx": "cea345c0afaa58589164c136559318582a3a938b8cc1c28691052f3c86a83d17",
+    "cli/commands.mdx": "4bbf699bf756454dc933e831afc3f98255ceaede0040d7fc424743a67e60d8d1",
     "mcp/tools.mdx": "a6d36b29aec2beb90a5958e84c35486949ec29a72dcbcdf8daa1e1758b2b074c"
   }
 }
