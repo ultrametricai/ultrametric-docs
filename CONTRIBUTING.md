@@ -23,7 +23,16 @@ npm run generate -- /path/to/prepared-cli /path/to/prepared-api /path/to/private
 npm run verify:examples -- /path/to/prepared-cli /path/to/prepared-api
 ```
 
-Keep the reviewed source-pin file and prepared source copies outside this repository. The generator checks source and build fingerprints before exporting contracts. The example verifier uses synthetic data and blocks external requests and context writes.
+For a CLI-only update, use the extracted published npm package with its runtime dependencies installed. This retains the existing MCP references:
+
+```sh
+npm run generate -- --cli-only /path/to/unpacked-npm-release
+npm run verify:examples -- --cli-only /path/to/unpacked-npm-release
+```
+
+The CLI reference version comes from the executable and must match the package version. Use a published release when updating the live command reference.
+
+Keep the reviewed source-pin file and prepared source copies outside this repository. In source-based mode, the generator checks source and build fingerprints before exporting contracts. The example verifier uses synthetic data and blocks external requests and context writes.
 
 `contracts/generated.json` records the generated-file hashes. MCP tool schemas remain available for exact tool inputs and outputs. Document consumer access through MCP and CLI. Keep agent skill setup in the CLI install page. Do not generate HTTP API pages or OpenAPI downloads.
 

@@ -78,12 +78,18 @@
       },
       {
         "name": "init",
-        "description": "Install the Ultrametric documentation skill in a project for Codex and Claude Code.",
+        "description": "Install Ultrametric skills globally for the current user. No project is required.",
         "usage": "[options]",
         "options": [
           {
+            "flags": "--project",
+            "description": "Install in the current project instead of the user home.",
+            "required": false,
+            "choices": null
+          },
+          {
             "flags": "--path <directory>",
-            "description": "Existing project directory (defaults to the current directory).",
+            "description": "Install in this existing project directory instead of the user home.",
             "required": false,
             "choices": null
           },
@@ -99,7 +105,7 @@
           },
           {
             "flags": "--dry-run",
-            "description": "Preview changes without writing project files, settings, or logs.",
+            "description": "Preview changes without writing skills, settings, or logs.",
             "required": false,
             "choices": null
           },
